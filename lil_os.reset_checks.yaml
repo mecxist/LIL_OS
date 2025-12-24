@@ -1,0 +1,48 @@
+version: 1
+
+paths:
+  docs_dir: "docs"
+  master_rules: "docs/MASTER_RULES.md"
+  governance: "docs/GOVERNANCE.md"
+  context_budget: "docs/CONTEXT_BUDGET.md"
+  reset_triggers: "docs/RESET_TRIGGERS.md"
+  decision_log: "docs/DECISION_LOG.md"
+  cursor_rules: ".cursorrules"
+  memory_dir: "memory"
+  agents_dir: "agents"
+
+windows:
+  rule_velocity_days: 30
+  decision_log_rolling_entries: 20
+
+thresholds:
+  rule_velocity_consecutive_windows: 2
+  justification_decay_incomplete_entries: 2
+  max_rules: 120
+  max_agents: 8
+  max_memory_artifacts: 200
+  metric_dominance_consecutive_decisions: 3
+  override_normalization_per_window: 2
+
+conventions:
+  decision_log_required_fields:
+    - "Date:"
+    - "Decision:"
+    - "Trigger:"
+    - "Rationale:"
+    - "Tradeoffs:"
+    - "Expected Impact:"
+    - "Review Date:"
+  override_markers:
+    - "OVERRIDE"
+    - "EMERGENCY OVERRIDE"
+    - "Override Conditions"
+  metric_markers:
+    - "Metric:"
+    - "Primary metric:"
+    - "Optimized for"
+    - "KPI:"
+  memory_required_metadata:
+    - "Purpose:"
+    - "Retention:"
+    - "Review Trigger:"

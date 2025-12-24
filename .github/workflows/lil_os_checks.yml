@@ -1,0 +1,16 @@
+name: LIL OS Checks
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  lil-os:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rule ID lint
+        run: python3 scripts/lil_os_rule_id_lint.py
+      - name: Reset checks
+        run: python3 scripts/lil_os_reset_checks.py

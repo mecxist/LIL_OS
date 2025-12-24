@@ -1,0 +1,22 @@
+version: 1
+
+scan_paths:
+  - "docs"
+  - ".cursorrules"
+
+rule_id:
+  pattern: "\\[LIL-(MR|GOV|CB|RT|WF|QL|SEC|DATA|API|PERF|CR)-(BOUNDARY|AUTH|PROCESS|SAFETY|SCOPE|FORMAT|BUDGET|LOG|RESET)-\\d{4}\\]"
+  require_normative_keyword: true
+  normative_keywords:
+    - "MUST NOT"
+    - "MUST"
+    - "SHOULD NOT"
+    - "SHOULD"
+    - "MAY"
+
+checks:
+  unique_ids: true
+  dangling_references: true
+  duplicate_rule_text: true
+
+strict_sequences: false

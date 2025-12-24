@@ -1,0 +1,7 @@
+# Cursor Rules (LIL OS v0.1.1)
+
+- [LIL-CR-PROCESS-0001] You MUST follow docs/GOVERNANCE.md for intent-level changes.
+- [LIL-CR-PROCESS-0002] You MUST log intent-level changes in docs/DECISION_LOG.md using required fields.
+- [LIL-CR-PROCESS-0003] You MUST run scripts/lil_os_rule_id_lint.py and scripts/lil_os_reset_checks.py before merging.
+- [LIL-CR-BOUNDARY-0004] You MUST NOT expand automation into human-judgment domains without explicit justification + review date (docs/CONTEXT_BUDGET.md).
+- [LIL-CR-RESET-0005] If a reset trigger trips, you MUST reduce scope before proceeding (docs/RESET_TRIGGERS.md).

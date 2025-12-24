@@ -1,0 +1,13 @@
+repos:
+  - repo: local
+    hooks:
+      - id: lil-os-rule-id-lint
+        name: LIL OS Rule ID Lint
+        entry: python3 scripts/lil_os_rule_id_lint.py
+        language: system
+        pass_filenames: false
+      - id: lil-os-reset-checks
+        name: LIL OS Reset Checks
+        entry: python3 scripts/lil_os_reset_checks.py
+        language: system
+        pass_filenames: false
