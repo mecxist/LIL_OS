@@ -30,7 +30,14 @@ def load_simple_yaml(path: Path) -> dict:
         if v.isdigit():
             return int(v)
         if (v.startswith('"') and v.endswith('"')) or (v.startswith("'") and v.endswith("'")):
-            return v[1:-1]
+            result = v[1:-1]
+            # Handle escape sequences for double-quoted strings (YAML-style)
+            if v.startswith('"'):
+                # Unescape common regex patterns
+                result = result.replace('\\[', '[').replace('\\]', ']')
+                result = result.replace('\\d', r'\d')
+                result = result.replace('\\\\', '\\')
+            return result
         return v
 
     for ln in lines:

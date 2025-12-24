@@ -26,6 +26,10 @@ Each entry MUST include:
 ---
 
 ## Template
+
+<!-- This template is for reference only and should not be parsed as an actual entry -->
+
+```
 Date:
 Decision:
 Trigger:
@@ -33,3 +37,10 @@ Rationale:
 Tradeoffs:
 Expected Impact:
 Review Date:
+```
+
+---
+
+## Entries
+
+<!-- Actual decision log entries go below this line -->

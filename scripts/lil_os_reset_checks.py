@@ -144,10 +144,34 @@ def count_rules_in_text(text: str) -> int:
     return bullets + musts
 
 def parse_decision_log_entries(text: str) -> List[str]:
+    # Skip metadata sections - only parse entries after "Entries" section or entries with actual field values
+    skip_sections = {"purpose", "what belongs here", "required fields", "template", "entries"}
+    
     parts = re.split(r"(?m)^\s*#{2,6}\s+", text)
     if len(parts) > 1:
-        return [p.strip() for p in parts[1:] if p.strip()]
-    return [p.strip() for p in re.split(r"\n-{3,}\n", text) if p.strip()]
+        entries = []
+        in_entries_section = False
+        for p in parts[1:]:
+            p = p.strip()
+            if not p:
+                continue
+            # Check if this is the "Entries" section marker
+            first_line = p.split('\n')[0].strip().lower()
+            if "entries" in first_line:
+                in_entries_section = True
+                continue
+            # Skip known metadata sections
+            if first_line in skip_sections:
+                continue
+            # Only include entries that have actual field values (not just headers)
+            # An entry should have at least "Date:" and "Decision:" fields
+            if "Date:" in p and "Decision:" in p:
+                entries.append(p)
+            elif in_entries_section:
+                # If we're in entries section, include it even if format is slightly off
+                entries.append(p)
+        return entries
+    return [p.strip() for p in re.split(r"\n-{3,}\n", text) if p.strip() and "Date:" in p and "Decision:" in p]
 
 def entry_missing_fields(entry: str, required_fields: List[str]) -> List[str]:
     missing = []
