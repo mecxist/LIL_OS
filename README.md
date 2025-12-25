@@ -38,7 +38,7 @@ The framework works best in these environments because it relies on:
 - Terminal access for running validation scripts
 - Direct integration with your development workflow
 
-**Not using a local IDE with integrated AI agents?** See [Adapting LIL OS](docs/ADAPTING.md) for guidance on adapting LIL OS to web-based environments (note: adaptations are done at your own risk and may result in limited functionality).
+**Not using a local IDE with integrated AI agents?** See the [Adapting LIL OS](docs/CONTRIBUTING.md#adapting-lil-os-for-web-based-environments) section in CONTRIBUTING.md for guidance (note: adaptations are done at your own risk and may result in limited functionality).
 
 ## What exactly does LIL OS do?
 LIL OS gives you a set of practical tools to keep your AI-assisted projects under your control:
@@ -188,8 +188,7 @@ After the setup wizard completes:
 
 See `docs/` for complete documentation:
 - `USER_GUIDE.md` — **start here!** Beginner-friendly guide with examples
-- `CONTRIBUTING.md` — how to contribute and join the collective
-- `ADAPTING.md` — adapting LIL OS for web-based environments
+- `CONTRIBUTING.md` — how to contribute, join the collective, and adapt LIL OS for web-based environments
 - `GOVERNANCE.md` — governance framework
 - `CONTEXT_BUDGET.md` — context scarcity doctrine
 - `RESET_TRIGGERS.md` — circuit breaker conditions
