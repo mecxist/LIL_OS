@@ -50,13 +50,43 @@ The framework works best in these environments because it relies on:
 
 **Not using a local IDE with integrated AI agents?** See the [Adapting LIL OS](docs/CONTRIBUTING.md#adapting-lil-os-for-web-based-environments) section in CONTRIBUTING.md for guidance (note: adaptations are done at your own risk and may result in limited functionality).
 
-## Quick Start
+## Quick Start Guide (Using Chat Prompts)
+
+If you're not comfortable with the terminal (yet), copy the following prompt to your AI assistant or take this opportunity to learn more about terminal commands using the resourced we provide below the prompt:
+
+```
+I want to set up LIL OS in my project. Please help me step by step:
+
+1. First, check if Python 3 is installed on my system by having me run: python3 --version
+2. If Python isn't installed, guide me through installing it for my operating system
+3. Help me download or clone the LIL OS repository from https://github.com/mecxist/LIL_OS
+4. Navigate to the LIL_OS folder in terminal
+5. Run the setup wizard: python3 scripts/setup_wizard.py
+6. Guide me through answering the setup wizard's questions
+7. Explain what each step does in simple terms
+
+Start with step 1 and wait for me to confirm before moving to the next step.
+```
+
+Your AI assistant will walk you through everything!
+
+**Want to learn the terminal?** Here are the official resources for the IDEs that work best with LIL OS, for refernce:
+- **Cursor:** [Cursor Terminal Documentation](https://docs.cursor.com/features/terminal) - Learn how to use the integrated terminal in Cursor
+- **VS Code:** [VS Code Integrated Terminal Guide](https://code.visualstudio.com/docs/terminal/basics) - Official VS Code terminal documentation
+- **JetBrains (IntelliJ, WebStorm, etc.):** [JetBrains Terminal Guide](https://www.jetbrains.com/help/idea/terminal-emulator.html) - Using the terminal in JetBrains IDEs
+- **General Terminal Tutorials:** [Command Line Crash Course](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Understanding_client-side_tools/Command_line) - Cross-platform terminal basics
+
+---
+
+## Quick Start Guide (Using Terminal Commands)
 
 ### Step 0: Check if you have Python installed
 
 **First, let's make sure you have Python 3 installed:**
 
-1. Open your terminal (on Mac: press `Cmd + Space`, type "Terminal", press Enter)
+1. Open a terminal:
+   - **In your IDE:** Use the integrated terminal (Cursor, VS Code, JetBrains all have built-in terminals)
+   - **Or system terminal:** On Mac: press `Cmd + Space`, type "Terminal", press Enter
 2. Type this command and press Enter:
    ```bash
    python3 --version
@@ -65,9 +95,25 @@ The framework works best in these environments because it relies on:
 4. **If you see an error** (like "command not found"): You need to install Python first.
 
 **Don't have Python? Here's how to install it:**
-- **Mac:** Download from [python.org](https://www.python.org/downloads/) or install Homebrew first, then run `brew install python3`
-- **Windows:** Download from [python.org](https://www.python.org/downloads/) - make sure to check "Add Python to PATH" during installation
-- **Linux:** Run `sudo apt install python3` (Ubuntu/Debian) or use your package manager
+
+**Mac:**
+- **Option 1 (Recommended):** If you have Homebrew installed, run this in your terminal:
+  ```bash
+  brew install python3
+  ```
+- **Option 2:** Download the installer from [python.org](https://www.python.org/downloads/) and follow the installation wizard
+
+**Windows:**
+- Download the installer from [python.org](https://www.python.org/downloads/)
+- **Important:** During installation, make sure to check the box that says "Add Python to PATH"
+- After installation, close and reopen your terminal, then verify with `python3 --version`
+
+**Linux (Ubuntu/Debian):**
+- Run this command in your terminal:
+  ```bash
+  sudo apt update && sudo apt install python3
+  ```
+- For other Linux distributions, use your package manager (e.g., `yum` for CentOS/RHEL, `pacman` for Arch)
 
 ---
 
@@ -129,34 +175,6 @@ python3 scripts/setup_wizard.py
 - Try `python scripts/setup_wizard.py` instead (some systems use `python` instead of `python3`)
 
 The wizard will ask you a few questions and set everything up automatically!
-
----
-
-### Alternative: Let Your AI Assistant Help You
-
-**If you're not comfortable with the terminal (yet), copy this prompt to your AI assistant:**
-
-```
-I want to set up LIL OS in my project. Please help me step by step:
-
-1. First, check if Python 3 is installed on my system by having me run: python3 --version
-2. If Python isn't installed, guide me through installing it for my operating system
-3. Help me download or clone the LIL OS repository from https://github.com/mecxist/LIL_OS
-4. Navigate to the LIL_OS folder in terminal
-5. Run the setup wizard: python3 scripts/setup_wizard.py
-6. Guide me through answering the setup wizard's questions
-7. Explain what each step does in simple terms
-
-Start with step 1 and wait for me to confirm before moving to the next step.
-```
-
-Your AI assistant will walk you through everything!
-
-**Want to learn the terminal?** Here are resources for the IDEs that work best with LIL OS:
-- **Cursor:** [Cursor Terminal Documentation](https://docs.cursor.com/features/terminal) - Learn how to use the integrated terminal in Cursor
-- **VS Code:** [VS Code Integrated Terminal Guide](https://code.visualstudio.com/docs/terminal/basics) - Official VS Code terminal documentation
-- **JetBrains (IntelliJ, WebStorm, etc.):** [JetBrains Terminal Guide](https://www.jetbrains.com/help/idea/terminal-emulator.html) - Using the terminal in JetBrains IDEs
-- **General Terminal Tutorials:** [Command Line Crash Course](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Understanding_client-side_tools/Command_line) - Cross-platform terminal basics
 
 ---
 
