@@ -212,7 +212,7 @@ For intent-level changes and major adaptations, we ask that you apply to become 
 
 - **Forking & Adapting LIL OS** — Large overhauls that extend LIL OS to new platforms or environments require Official Contributor status.
 
-**Why?** Intent-level changes affect the fundamental principles of LIL OS. Official Contributors have demonstrated alignment with Liberatory Intelligence principles and commitment to the project's mission.
+**Why?** Intent-level changes affect the fundamental principles of LIL OS; therefore, our expectation is that Official Contributors demonstrate alignment with Liberatory Intelligence principles and commitment to the project's mission before having their changes considered.
 
 **How to become an Official Contributor:** [Apply to join LIL Co.](docs/CONTRIBUTING.md#joining-the-collective)
 
