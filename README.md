@@ -132,20 +132,48 @@ Your AI assistant will walk you through everything!
    ```
    (Replace `Downloads` with wherever you saved the file)
 
-**Option B: Use Git (if you have it installed)**
-1. Open Terminal
-2. Navigate to where you want LIL OS (like your Documents folder):
+**Option B: Use Git (Recommended)**
+1. **Note:** You don't need a GitHub account to clone the repository, but having one is helpful if you plan to contribute later. Create a free account at [github.com](https://github.com) if you'd like.
+2. **Check if Git is installed:** Open a terminal (IDE terminal or system terminal) and run:
+   ```bash
+   git --version
+   ```
+   - **If you see a version number:** ✅ You're good! Skip to step 4.
+   - **If you see an error:** You need to install Git first (see instructions below)
+
+4. Navigate to where you want LIL OS (like your Documents folder):
    ```bash
    cd ~/Documents
    ```
-3. Copy and paste this command:
+5. Copy and paste this command:
    ```bash
    git clone https://github.com/mecxist/LIL_OS.git
    ```
-4. Navigate into the folder:
+6. Navigate into the folder:
    ```bash
    cd LIL_OS
    ```
+
+**Don't have Git installed? Here's how to install it:**
+
+**Mac:**
+- **Option 1 (Recommended):** If you have Homebrew installed, run this in your terminal:
+  ```bash
+  brew install git
+  ```
+- **Option 2:** Download the installer from [git-scm.com](https://git-scm.com/download/mac) and follow the installation wizard
+
+**Windows:**
+- Download Git for Windows from [git-scm.com](https://git-scm.com/download/win)
+- Run the installer and use the default options (they'll set up Git properly)
+- After installation, close and reopen your terminal, then verify with `git --version`
+
+**Linux (Ubuntu/Debian):**
+- Run this command in your terminal:
+  ```bash
+  sudo apt update && sudo apt install git
+  ```
+- For other Linux distributions, use your package manager (e.g., `yum` for CentOS/RHEL, `pacman` for Arch)
 
 **Option C: I already have the files on my computer**
 1. Open Terminal
