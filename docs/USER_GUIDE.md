@@ -37,23 +37,15 @@ Before you start, make sure you have:
 
 ### Step 2: Setting Up LIL OS
 
-The easiest way to get started is using the setup wizard. Here's how:
+The easiest way to get started is using the setup wizard. This is also a great opportunity to get familiar with using terminal commands in your IDE!
 
-**Copy this command and paste it into your terminal (make sure you're in the LIL_OS folder):**
+**Open the terminal in your IDE** (Cursor, VS Code, and JetBrains all have built-in terminals - this is a good skill to learn). Make sure you're in the LIL_OS folder, then copy and paste this command:
 
 ```bash
 python3 scripts/setup_wizard.py
 ```
 
-**Or, if you prefer to use your AI assistant, copy this prompt:**
-
-```
-I want to set up LIL OS in my project. Please help me:
-1. Check if Python 3 is installed
-2. Download or clone the LIL OS files
-3. Run the setup wizard
-4. Guide me through the initial configuration
-```
+**What you're doing:** You're running a Python script that will guide you through setting up LIL OS. Even though you're copying and pasting the command, you're learning how to run scripts in the terminal - a fundamental skill for developers.
 
 The setup wizard will ask you a few simple questions. Here's what each question means and how to answer:
 
