@@ -6,12 +6,12 @@ LIL OS is a thoughtfully crafted operating system that helps protect vibecoders,
 
 In a nutshell, LIL OS governs **change** (evolution over time) in AI-assisted systems by managing three critical dimensions: **intent** (what your project is meant to do), **authority** (who can make what decisions), and **context** (the rules, instructions, and automation that guide behavior).
 
-Unlike tools that only manage code execution and resources, LIL OS implements a governance layer that prevents AI assistants from making unauthorized changes, accumulating conflicting rules, or drifting from your original goals and intent. By enforcing context budgets, where instructions, rules, memory, and automation are treated as finite resources, LIL OS prevents the complexity creep that causes projects to become unmanageable. Every new rule must justify its cost, every important decision must get logged, and the system automatically flags when complexity is growing faster than it's being managed.
+Unlike tools that only manage code execution and resources, LIL OS implements a governance layer that prevents AI assistants from making unauthorized changes, accumulating conflicting rules, or drifting from your original goals and intent. By enforcing context budgets, where instructions, rules, memory, and automation are treated as finite resources, LIL OS prevents the complexity creep that causes projects to veer off track. Every new rule must justify its cost, every important decision must get logged, and the system automatically flags when complexity is growing faster than it's being managed.
 
 > In this way, governance is deliberate friction, applied at points of irreversible change because some decisions require justification, not just permission.
 
 ## What exactly does LIL OS do?
-LIL OS gives you a set of practical tools to keep your AI-assisted projects under your control:
+LIL OS gives you a set of practical tools to keep you from being at the mercy of your agentic tools:
 
 **Key Features:**
 
@@ -49,7 +49,6 @@ The framework works best in these environments because it relies on:
 - Direct integration with your development workflow
 
 **Not using a local IDE with integrated AI agents?** See the [Adapting LIL OS](docs/CONTRIBUTING.md#adapting-lil-os-for-web-based-environments) section in CONTRIBUTING.md for guidance (note: adaptations are done at your own risk and may result in limited functionality).
-
 
 ## Quick Start
 
