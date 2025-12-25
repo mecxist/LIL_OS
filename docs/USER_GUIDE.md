@@ -39,10 +39,10 @@ Before you start, make sure you have:
 
 The easiest way to get started is using the setup wizard. Here's how:
 
-**Copy this command and paste it into your terminal:**
+**Copy this command and paste it into your terminal (make sure you're in the LIL_OS folder):**
 
 ```bash
-python3 -c "$(curl -fsSL https://raw.githubusercontent.com/mecxist/LIL_OS/main/scripts/setup_wizard.py)" || python3 scripts/setup_wizard.py
+python3 scripts/setup_wizard.py
 ```
 
 **Or, if you prefer to use your AI assistant, copy this prompt:**
@@ -55,10 +55,29 @@ I want to set up LIL OS in my project. Please help me:
 4. Guide me through the initial configuration
 ```
 
-The setup wizard will ask you a few simple questions:
-- What's your project name?
-- Do you want to enable automatic checks?
-- Do you want to set up pre-commit hooks?
+The setup wizard will ask you a few simple questions. Here's what each question means and how to answer:
+
+**Question 1: "Continue anyway? (y/n)"**
+- **When you'll see this:** Only if the wizard doesn't detect a project directory (no `.git` folder, `package.json`, `requirements.txt`, or `pyproject.toml`)
+- **What it means:** The wizard thinks you might not be in a project folder, but you can still set up LIL OS here
+- **How to answer:**
+  - Type `y` and press Enter if you want to set up LIL OS in this folder anyway
+  - Type `n` and press Enter if you want to cancel and navigate to your project folder first
+- **Recommendation:** If you're setting up LIL OS in a new project that doesn't have these files yet, type `y`. If you're in the wrong folder, type `n` and navigate to your project folder first.
+
+**Question 2: "Would you like to set up pre-commit hooks? (y/n)"**
+- **What it means:** Pre-commit hooks automatically check your code before you commit changes. This helps catch problems early.
+- **How to answer:**
+  - Type `y` and press Enter if you want automatic checks (recommended for most users)
+  - Type `n` and press Enter if you prefer to run checks manually
+- **Recommendation:** Type `y` if you're new to LIL OS - it helps prevent mistakes. You can always disable it later if needed.
+
+**Question 3: "Would you like to run validation scripts now? (y/n)"**
+- **What it means:** The wizard can test that everything is set up correctly right away
+- **How to answer:**
+  - Type `y` and press Enter to verify your setup works (recommended)
+  - Type `n` and press Enter to skip this check
+- **Recommendation:** Type `y` to make sure everything is working correctly before you start using LIL OS.
 
 Just answer the questions, and the wizard will set everything up for you!
 

@@ -132,8 +132,8 @@ Your AI assistant will walk you through everything!
    ```
    (Replace `Downloads` with wherever you saved the file)
 
-**Option B: Use Git (Recommended)**
-1. **Note:** You don't need a GitHub account to clone the repository, but having one is helpful if you plan to contribute later. Create a free account at [github.com](https://github.com) if you'd like.
+**Option B: Use Git (Highly Recommended)**
+1. **Note:** You don't need a GitHub account to clone the repository, but it's recommended that all developers familiarize tthemselves with github sooner than later. You can create a free account at [github.com](https://github.com).
 2. **Check if Git is installed:** Open a terminal (IDE terminal or system terminal) and run:
    ```bash
    git --version
@@ -187,6 +187,8 @@ Your AI assistant will walk you through everything!
 
 ### Step 2: Run the Setup Wizard
 
+**Before running the setup wizard, we recommend reading `docs/USER_GUIDE.md`** (especially the "Setting Up LIL OS" section starting around line 38). The User Guide explains what questions the wizard will ask and how to answer them correctly, which is especially helpful if you're new to LIL OS or development tools.
+
 **Now that you're in the LIL_OS folder, run the setup wizard:**
 
 ```bash
@@ -202,14 +204,14 @@ python3 scripts/setup_wizard.py
 - Make sure Python 3 is installed (go back to Step 0)
 - Try `python scripts/setup_wizard.py` instead (some systems use `python` instead of `python3`)
 
-The wizard will ask you a few questions and set everything up automatically!
+The wizard will ask you a few questions about pre-commit hooks and validation. The User Guide explains what each question means and how to answer it.
 
 ---
 
 ### What's Next?
 
 After the setup wizard completes:
-1. Read `docs/USER_GUIDE.md` - This is a beginner-friendly guide that explains everything
+1. If you haven't already, read `docs/USER_GUIDE.md` - This beginner-friendly guide explains day-to-day usage and when to log decisions
 2. Start using LIL OS in your project - Most of the time, you can code normally!
 3. When you make an important decision, log it in `docs/DECISION_LOG.md`
 
