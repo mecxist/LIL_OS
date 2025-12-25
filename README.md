@@ -1,44 +1,14 @@
 # LIL OS (v0.1.1)
 
-**A constitutional substrate for AI-assisted software development** built with **Liberatory Intelligence** in mind. - mec dot, Chief Architect<br>
-To read more about Liberatory Intelligence, visit the Liberatory Intelligence Laboratories, Co. website - https://www.lilco.io
+## What and why is LIL OS?
 
-## What is LIL OS?
-
-LIL OS is a thoughtfully crafted operating system that helps protect vibecoders, inexperienced developers, and developers new to agentic workflows from the seemingly unavoidable headaches that come when agentic tools operate without proper boundaries.
+LIL OS is a thoughtfully crafted operating system that helps protect vibecoders, inexperienced developers, and experienced developers who are new to agentic workflows from the seemingly unavoidable headaches that come when agentic tools operate without proper boundaries. Learn more at - https://www.lilco.io
 
 In a nutshell, LIL OS governs **change** (evolution over time) in AI-assisted systems by managing three critical dimensions: **intent** (what your project is meant to do), **authority** (who can make what decisions), and **context** (the rules, instructions, and automation that guide behavior).
 
 Unlike tools that only manage code execution and resources, LIL OS implements a governance layer that prevents AI assistants from making unauthorized changes, accumulating conflicting rules, or drifting from your original goals and intent. By enforcing context budgets, where instructions, rules, memory, and automation are treated as finite resources, LIL OS prevents the complexity creep that causes projects to become unmanageable. Every new rule must justify its cost, every important decision must get logged, and the system automatically flags when complexity is growing faster than it's being managed.
 
-> In this way, governance is deliberate friction, applied at points of irreversible change.
-
-## Who is LIL OS For?
-
-LIL OS is designed for:
-
-- **Developers who don't know what they don't know** — LIL OS helps vibecoders, inexperienced developers, and developers new to agentic workflows maintain control, judgment, and autonomy when working with agentic systems and helps prevent their AI assistants from making unauthorized changes to system goals
-- **Solo developers who want to preserve institutional knowledge** — LIL OS documents the "why" behind every important decision, making it easy for new team members to understand the project's evolution, avoiding any "why did we do it this way?" confusion, as projects grow and expand and making it explicitly clear when systems need to be redesigned as more knowledgeable team members join projects.
-- **Teams working with AI assistants** — LIL OS prevents conflicting decisions and changes when multiple team members use agentic tools, maintains consistency across projects, creates a shared understanding of why important choices were made, and prevents AI systems from optimizing themselves into dangerous or unintended states.
-- **Organizations who value transparency and accountability** — LIL OS creates a clear and complete audit trail of important decisions, ensuring every significant choice is documented with rationale, tradeoffs, and context, making it easy to understand why key decisions were made, and who should be held accountable, without bureaucracy
-- **Anyone** building systems where AI has significant autonomy and you want to ensure that the project doesn't drift from original intent
-
-## IDE Compatibility & Environment Adaptation
-
-LIL OS is **optimized for local development** that uses IDEs with integrated AI agents like Cursor AI, Claude Code, Codex, Gemini CLI, etc. :
-- **Cursor** (with Cursor AI)
-- **VS Code** (with GitHub Copilot, Cursor extension, or other AI assistants)
-- **JetBrains IDEs** (IntelliJ IDEA, WebStorm, PyCharm, etc. with AI plugins)
-
-**Claude Pro Subscription Optimization:** If you're a Claude Pro or Max subscriber, we **strongly recommend** using Claude Code directly in your IDE terminal rather than via an API integration. This ensures you benefit from your flat-rate subscription allowance without additional API token charges, while maintaining seamless integration with LIL OS's governance features.
-
-The framework works best in these environments because it relies on:
-- File system access for governance documents and decision logs
-- Pre-commit hooks for validation
-- Terminal access for running validation scripts
-- Direct integration with your development workflow
-
-**Not using a local IDE with integrated AI agents?** See the [Adapting LIL OS](docs/CONTRIBUTING.md#adapting-lil-os-for-web-based-environments) section in CONTRIBUTING.md for guidance (note: adaptations are done at your own risk and may result in limited functionality).
+> In this way, governance is deliberate friction, applied at points of irreversible change because some decisions require justification, not just permission.
 
 ## What exactly does LIL OS do?
 LIL OS gives you a set of practical tools to keep your AI-assisted projects under your control:
@@ -62,6 +32,24 @@ LIL OS gives you a set of practical tools to keep your AI-assisted projects unde
 - **Automated Validation & Pre-commit Hooks** — Catch problems before they become problems. Run validation scripts manually or set up pre-commit hooks to automatically check rule formatting, decision log completeness, reset triggers, and context budget compliance.
 
 - **CI/CD Integration** — Works with your existing workflow. GitHub Actions integration means validation runs automatically on every push, keeping the whole team in sync without extra effort.
+
+## IDE Compatibility & Environment Adaptation
+
+LIL OS is **optimized for local development** that uses IDEs with integrated AI agents like Cursor AI, Claude Code, Codex, Gemini CLI, etc. :
+- **Cursor** (with Cursor AI)
+- **VS Code** (with GitHub Copilot, Cursor extension, or other AI assistants)
+- **JetBrains IDEs** (IntelliJ IDEA, WebStorm, PyCharm, etc. with AI plugins)
+
+**Claude Pro Subscription Optimization:** If you're a Claude Pro or Max subscriber, we **strongly recommend** using Claude Code directly in your IDE terminal rather than via an API integration. This ensures you benefit from your flat-rate subscription allowance without additional API token charges, while maintaining seamless integration with LIL OS's governance features.
+
+The framework works best in these environments because it relies on:
+- File system access for governance documents and decision logs
+- Pre-commit hooks for validation
+- Terminal access for running validation scripts
+- Direct integration with your development workflow
+
+**Not using a local IDE with integrated AI agents?** See the [Adapting LIL OS](docs/CONTRIBUTING.md#adapting-lil-os-for-web-based-environments) section in CONTRIBUTING.md for guidance (note: adaptations are done at your own risk and may result in limited functionality).
+
 
 ## Quick Start
 
@@ -197,48 +185,10 @@ See `docs/` for complete documentation:
 
 ## Contributing
 
-### Open Contributions (No Approval Required)
-
-Anyone can contribute:
-- **Implementation changes** (bug fixes, docs, tooling) — Submit a PR, maintainers will review. No governance overhead required.
-- **Examples and use cases** — Share how you're using LIL OS in your projects.
-
-### Official Contributor Required
-
-For intent-level changes and major adaptations, we ask that you apply to become an Official Contributor:
-
-- **Intent-level changes** (governance, rules, philosophy) — Must be an Official Contributor and follow `docs/GOVERNANCE.md` and be logged in `docs/DECISION_LOG.md`.
-
-- **Forking & Adapting LIL OS** — Large overhauls that extend LIL OS to new platforms or environments require Official Contributor status.
-
-**Why?** Intent-level changes affect the fundamental principles of LIL OS; therefore, our expectation is that Official Contributors demonstrate alignment with Liberatory Intelligence principles and commitment to the project's mission before having their changes considered.
-
-**How to become an Official Contributor:** [Apply to join LIL Co.](docs/CONTRIBUTING.md#joining-the-collective)
-
-See the [full contribution guidelines](docs/CONTRIBUTING.md) for detailed information about contributing and joining the collective.
+Anyone can contribute bug fixes, documentation, and examples. Intent-level changes (governance, rules, philosophy) require Official Contributor status. See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for details.
 
 ## License
 
-MIT License
-
-Copyright (c) 2024 LIL OS Contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+See [LICENSE.md](LICENSE.md) for license information.
 
 
