@@ -51,7 +51,8 @@ security:
   check_decision_log_integrity: true
   check_governance_file_changes: true
   check_secrets: true
-  check_script_checksums: false  # Enable manually after setting expected checksums
+  # Enable manually after setting expected checksums
+  check_script_checksums: false
   secret_patterns:
     # API Keys - must have key=value format with actual secret value
     - "(?i)(api[_-]?key|apikey)[\s:=]+['\"]?([a-zA-Z0-9_\-]{32,})['\"]?"

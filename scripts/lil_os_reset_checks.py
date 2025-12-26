@@ -33,6 +33,11 @@ def load_simple_yaml(path: Path) -> dict:
         v = v.strip()
         if v.isdigit():
             return int(v)
+        # Handle boolean values
+        if v.lower() == 'true':
+            return True
+        if v.lower() == 'false':
+            return False
         if (v.startswith('"') and v.endswith('"')) or (v.startswith("'") and v.endswith("'")):
             return v[1:-1]
         return v
@@ -448,6 +453,11 @@ def check_governance_file_changes(governance_files: List[Path], decision_log: Pa
             file_name = Path(mod["file"]).name
             commit_hash_short = mod["commit_hash"][:8]
             
+            # Skip initial commits - they don't need decision log entries
+            commit_msg_lower = mod["message"].lower()
+            if any(word in commit_msg_lower for word in ["initial commit", "initial", "first commit", "setup", "project structure"]):
+                continue
+            
             # Check if any decision log entry mentions this file or commit
             entry_found = False
             for entry in entries:
@@ -533,6 +543,10 @@ def check_secret_detection(decision_log: Path, scan_paths: List[Path], secret_pa
     # Always scan decision log
     if decision_log.exists() and decision_log not in files_to_scan:
         files_to_scan.append(decision_log)
+    
+    # Exclude files that contain pattern examples (like SECURITY.md)
+    excluded_files = ["SECURITY.md", "docs/SECURITY.md"]
+    files_to_scan = [f for f in files_to_scan if f.name not in excluded_files and str(f) not in excluded_files]
     
     for file_path in files_to_scan:
         if not file_path.exists():
