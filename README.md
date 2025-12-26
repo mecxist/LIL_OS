@@ -52,19 +52,18 @@ We recommend you research and decide on an IDE and install it, to best implement
 
 **Not using a local IDE with integrated AI agents?** See the [Adapting LIL OS](docs/CONTRIBUTING.md#adapting-lil-os-for-web-based-environments) section in CONTRIBUTING.md for guidance (note: adaptations are done at your own risk and may result in limited functionality).
 
----
 
 ## Getting Started (Using Terminal Commands) 
 
-**Manual installation instructions are provided inline with Liberatory Intelligence principles** — we believe in empowering developers with the knowledge and skills to work autonomously in their development environments. These step-by-step terminal instructions help you learn fundamental skills while setting up LIL OS. See the [Installation Guide](docs/INSTALLATION.md) for complete setup instructions which include:
+**Manual installation instructions are provided inline with our firmly held Liberatory Intelligence principles** where we believe in deeply in empowering developers with the knowledge and skills to work autonomously in their development environments. These step-by-step terminal instructions help you learn fundamental skills while setting up LIL OS. See the [Installation Guide](docs/INSTALLATION.md) for complete setup instructions which include:
 
 ### Step 0: Check for or Install Python
 ### Step 1: Get the LIL OS files (various methods for Mac, PC & Linux)
 ### Step 2: Run the Setup Wizard
 
-**Not quite ready to do things manually yet, or want to get a feel for working within GitHub?** We understand! Read the [User Guide](docs/USER_GUIDE.md) which includes chat prompts you can use with your AI assistant to get guided help through the setup process.
+**Not quite ready to do things manually yet, and want to quickly get a feel for working within GitHub?** We understand! Read the [User Guide](docs/USER_GUIDE.md) which includes chat prompts you can use with your preferred AI assistant to get guided help through the setup process.
 
-**Want to learn the terminal?** Here are resources to help you get familiar with the terminal within the IDEs we recommend:
+**Ready to learn the terminal?** Here are resources to help you get familiar with the terminal within the IDEs we recommend:
 
 Here are the official resources for the IDEs that work best with LIL OS, for referrence:
 - **Cursor:** [Cursor Terminal Documentation](https://docs.cursor.com/features/terminal) - Learn how to use the integrated terminal in Cursor
@@ -73,9 +72,7 @@ Here are the official resources for the IDEs that work best with LIL OS, for ref
 - **General Terminal Tutorials:** [Command Line Crash Course](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Understanding_client-side_tools/Command_line) - Cross-platform terminal basics
 
 
----
-
-### What's Next?
+## What's Next?
 
 After the setup wizard completes:
 1. If you haven't already, read `docs/USER_GUIDE.md` - This beginner-friendly guide explains day-to-day usage and when to log decisions
