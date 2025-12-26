@@ -15,15 +15,23 @@ LIL OS provides a practical starting point for AI-assisted software projects tha
 
 **Key Features:**
 
-- 🚀 **Setup Wizard** 
-- 📁 **Standardized Project Structure** 
-- ⚖️ **Governance Without Bureaucracy**
-- 🏷️ **Rules Management**
-- 📝 **File Auditing & Decision Logging**
-- 🛑 **Reset Triggers (Circuit Breakers)** 
-- 💰 **Context Budgets**
-- ✅ **Automated Validation & Pre-commit Hooks**
-- ⚙️ **CI/CD Integration**
+- 🚀 **Setup Wizard** — Get started in minutes! The setup wizard walks you through initializing LIL OS, configuring governance rules, and setting up validation. Read the User Guide first to understand how your setup choices impact your system design.
+
+- 📁 **Standardized Project Structure** — Organized governance from day one. LIL OS provides a best-practices directory and file structure that keeps all governance files, rules, decision logs, and validation scripts in the right places. Your team and AI assistants can find and enforce rules consistently—no more wondering where things belong.
+
+- ⚖️ **Governance Without Bureaucracy** — Only important changes need governance (changes to goals, authority, or automation). Regular code changes work exactly like before—no red tape for everyday development.
+
+- 🏷️ **Rules Management** — Every rule has a unique ID (like `LIL-CR-PROCESS-0001`) for tracking, finding, and monitoring changes. No more hunting through documentation to figure out what rule applies where.
+
+- 📝 **File Auditing & Decision Logging** — Every important decision gets logged with who made it, why, and what tradeoffs were considered. Six months from now, you'll know exactly why a decision was made and whether it still makes sense. Perfect for teams or when you need to explain your choices.
+
+- 🛑 **Reset Triggers (Circuit Breakers)** — Automatic safety nets that pause and force scope reduction when: rules are added faster than removed, failures repeat without clear cause, the system can't explain its behavior, or optimization overrides important tradeoffs.
+
+- 💰 **Context Budgets** — Prevent rule bloat and complexity creep. Every new rule, instruction, or piece of automation must justify its cost, keeping your system understandable and maintainable instead of accumulating layers of complexity.
+
+- ✅ **Automated Validation & Pre-commit Hooks** — Catch problems before they become problems. Run validation scripts manually or set up pre-commit hooks to automatically check rule formatting, decision log completeness, reset triggers, and context budget compliance.
+
+- ⚙️ **CI/CD Integration** — Works with your existing workflow. GitHub Actions integration means validation runs automatically on every push, keeping the whole team in sync without extra effort.
 
 ## IDE Compatibility & Environment Adaptation
 
@@ -46,139 +54,24 @@ We recommend you research and decide on an IDE and install it, to best implement
 
 ---
 
-## Getting Started
+## Getting Started (Using Terminal Commands) 
 
-**Manual installation instructions are provided inline with Liberatory Intelligence principles** — we believe in empowering developers with the knowledge and skills to work autonomously in their development environments.
+**Manual installation instructions are provided inline with Liberatory Intelligence principles** — we believe in empowering developers with the knowledge and skills to work autonomously in their development environments. These step-by-step terminal instructions help you learn fundamental skills while setting up LIL OS. See the [Installation Guide](docs/INSTALLATION.md) for complete setup instructions which include:
 
-**Ready to install?** See the [Installation Guide](docs/INSTALLATION_GUIDE.md) for step-by-step terminal instructions that help you learn fundamental skills while setting up LIL OS.
+### Step 0: Check for or Install Python
+### Step 1: Get the LIL OS files (various methods for Mac, PC & Linux)
+### Step 2: Run the Setup Wizard
 
 **Not quite ready to do things manually yet, or want to get a feel for working within GitHub?** We understand! Read the [User Guide](docs/USER_GUIDE.md) which includes chat prompts you can use with your AI assistant to get guided help through the setup process.
 
-**First, let's make sure you have Python 3 installed:**
+**Want to learn the terminal?** Here are resources to help you get familiar with the terminal within the IDEs we recommend:
 
-1. Open a terminal:
-   - **In your IDE:** Use the integrated terminal (Cursor, VS Code, JetBrains all have built-in terminals)
-   - **Or system terminal:** On Mac: press `Cmd + Space`, type "Terminal", press Enter
-2. Type this command and press Enter:
-   ```bash
-   python3 --version
-   ```
-3. **If you see a version number** (like "Python 3.9.6"): ✅ You're good! Skip to Step 1.
-4. **If you see an error** (like "command not found"): You need to install Python first.
+Here are the official resources for the IDEs that work best with LIL OS, for referrence:
+- **Cursor:** [Cursor Terminal Documentation](https://docs.cursor.com/features/terminal) - Learn how to use the integrated terminal in Cursor
+- **VS Code:** [VS Code Integrated Terminal Guide](https://code.visualstudio.com/docs/terminal/basics) - Official VS Code terminal documentation
+- **JetBrains (IntelliJ, WebStorm, etc.):** [JetBrains Terminal Guide](https://www.jetbrains.com/help/idea/terminal-emulator.html) - Using the terminal in JetBrains IDEs
+- **General Terminal Tutorials:** [Command Line Crash Course](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Understanding_client-side_tools/Command_line) - Cross-platform terminal basics
 
-**Don't have Python? Here's how to install it:**
-
-**Mac:**
-- **Option 1 (Recommended):** If you have Homebrew installed, run this in your terminal:
-  ```bash
-  brew install python3
-  ```
-- **Option 2:** Download the installer from [python.org](https://www.python.org/downloads/) and follow the installation wizard
-
-**Windows:**
-- Download the installer from [python.org](https://www.python.org/downloads/)
-- **Important:** During installation, make sure to check the box that says "Add Python to PATH"
-- After installation, close and reopen your terminal, then verify with `python3 --version`
-
-**Linux (Ubuntu/Debian):**
-- Run this command in your terminal:
-  ```bash
-  sudo apt update && sudo apt install python3
-  ```
-- For other Linux distributions, use your package manager (e.g., `yum` for CentOS/RHEL, `pacman` for Arch)
-
----
-
-### Step 1: Get the LIL OS files
-
-**Choose one option:**
-
-**Option A: Download from GitHub (Easiest)**
-1. Go to https://github.com/mecxist/LIL_OS
-2. Click the green "Code" button
-3. Click "Download ZIP"
-4. Unzip the file to a location you can find (like your Desktop or Documents folder)
-5. Open Terminal and navigate to the folder:
-   ```bash
-   cd ~/Downloads/LIL_OS-main
-   ```
-   (Replace `Downloads` with wherever you saved the file)
-
-**Option B: Use Git (Highly Recommended)**
-1. **Note:** You don't need a GitHub account to clone the repository, but it's recommended that all developers familiarize tthemselves with github sooner than later. You can create a free account at [github.com](https://github.com).
-2. **Check if Git is installed:** Open a terminal (IDE terminal or system terminal) and run:
-   ```bash
-   git --version
-   ```
-   - **If you see a version number:** ✅ You're good! Skip to step 4.
-   - **If you see an error:** You need to install Git first (see instructions below)
-
-4. Navigate to where you want LIL OS (like your Documents folder):
-   ```bash
-   cd ~/Documents
-   ```
-5. Copy and paste this command:
-   ```bash
-   git clone https://github.com/mecxist/LIL_OS.git
-   ```
-6. Navigate into the folder:
-   ```bash
-   cd LIL_OS
-   ```
-
-**Don't have Git installed? Here's how to install it:**
-
-**Mac:**
-- **Option 1 (Recommended):** If you have Homebrew installed, run this in your terminal:
-  ```bash
-  brew install git
-  ```
-- **Option 2:** Download the installer from [git-scm.com](https://git-scm.com/download/mac) and follow the installation wizard
-
-**Windows:**
-- Download Git for Windows from [git-scm.com](https://git-scm.com/download/win)
-- Run the installer and use the default options (they'll set up Git properly)
-- After installation, close and reopen your terminal, then verify with `git --version`
-
-**Linux (Ubuntu/Debian):**
-- Run this command in your terminal:
-  ```bash
-  sudo apt update && sudo apt install git
-  ```
-- For other Linux distributions, use your package manager (e.g., `yum` for CentOS/RHEL, `pacman` for Arch)
-
-**Option C: I already have the files on my computer**
-1. Open Terminal
-2. Navigate to your LIL_OS folder:
-   ```bash
-   cd /path/to/your/LIL_OS
-   ```
-   (Replace `/path/to/your/LIL_OS` with the actual location of your LIL_OS folder)
-
----
-
-
-
-### Step 2: Run the Setup Wizard
-
-**Before running the setup wizard, we recommend reading `docs/USER_GUIDE.md`** (especially the "Setting Up LIL OS" section starting around line 38). The User Guide explains what questions the wizard will ask and how to answer them correctly, which is especially helpful if you're new to LIL OS or development tools.
-
-**Now that you're in the LIL_OS folder, run the setup wizard:**
-
-```bash
-python3 scripts/setup_wizard.py
-```
-
-**What this command does:**
-- `python3` - Runs Python 3
-- `scripts/setup_wizard.py` - The setup wizard script that will guide you through configuration
-
-**If you get an error:**
-- Make sure you're in the LIL_OS folder (check with `pwd` command)
-- Make sure Python 3 is installed (go back to Step 0)
-- Try `python scripts/setup_wizard.py` instead (some systems use `python` instead of `python3`)
-
-The wizard will ask you a few questions about pre-commit hooks and validation. The User Guide explains what each question means and how to answer it.
 
 ---
 
@@ -194,8 +87,7 @@ After the setup wizard completes:
 ## Documentation
 
 See `docs/` for complete documentation:
-- `INSTALLATION_GUIDE.md` — **start here!** Step-by-step installation instructions
-- `USER_GUIDE.md` — beginner-friendly guide with examples and chat prompts
+- `USER_GUIDE.md` — **start here!** Beginner-friendly guide with examples
 - `CONTRIBUTING.md` — how to contribute, join the collective, and adapt LIL OS for web-based environments
 - `GOVERNANCE.md` — governance framework
 - `CONTEXT_BUDGET.md` — context scarcity doctrine
