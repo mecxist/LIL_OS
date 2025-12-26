@@ -71,11 +71,10 @@ Here are the official resources for the IDEs that work best with LIL OS, for ref
 - **JetBrains (IntelliJ, WebStorm, etc.):** [JetBrains Terminal Guide](https://www.jetbrains.com/help/idea/terminal-emulator.html) - Using the terminal in JetBrains IDEs
 - **General Terminal Tutorials:** [Command Line Crash Course](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Understanding_client-side_tools/Command_line) - Cross-platform terminal basics
 
-
 ## What's Next?
 
 After the setup wizard completes:
-1. If you haven't already, read `docs/USER_GUIDE.md` - This beginner-friendly guide explains day-to-day usage and when to log decisions
+1. If you haven't already, read `docs/USER_GUIDE.md` - A beginner-friendly guide to LIL OS
 2. Start using LIL OS in your project - Most of the time, you can code normally!
 3. When you make an important decision, log it in `docs/DECISION_LOG.md`
 
