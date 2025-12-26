@@ -57,9 +57,9 @@ We recommend you research and decide on an IDE and install it, to best implement
 
 **Manual installation instructions are provided inline with our firmly held Liberatory Intelligence principles** where we believe in deeply in empowering developers with the knowledge and skills to work autonomously in their development environments. These step-by-step terminal instructions help you learn fundamental skills while setting up LIL OS. See the [Installation Guide](docs/INSTALLATION.md) for complete setup instructions which include:
 
-### Step 0: Check for or Install Python
-### Step 1: Get the LIL OS files (various methods for Mac, PC & Linux)
-### Step 2: Run the Setup Wizard
+Step 0: Check for or Install Python
+Step 1: Get the LIL OS files (various methods for Mac, PC & Linux)
+Step 2: Run the Setup Wizard
 
 **Not quite ready to do things manually yet, and want to quickly get a feel for working within GitHub?** We understand! Read the [User Guide](docs/USER_GUIDE.md) which includes chat prompts you can use with your preferred AI assistant to get guided help through the setup process.
 

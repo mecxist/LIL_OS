@@ -1,4 +1,4 @@
-# Installation Guide
+# Installation
 
 ## Getting Started (Using Terminal Commands) 
 
