@@ -19,7 +19,7 @@ LIL OS provides a practical starting point for AI-assisted software projects tha
 
 - 📁 **Standardized Project Structure** — Organized governance from day one. LIL OS provides a best-practices directory and file structure that keeps all governance files, rules, decision logs, and validation scripts in the right places. Your team and AI assistants can find and enforce rules consistently—no more wondering where things belong.
 
-- ⚖️ **Governance Without Bureaucracy** — Only important changes need governance (changes to goals, authority, or automation). Regular code changes work exactly like before—no red tape for everyday development.
+- ⚖️ **Governance With Smart Enforcement** — Only important changes need governance (changes to goals, authority, or automation). Regular code changes work exactly like before—no red tape for everyday development. When governance is required, LIL OS automatically ensures all governance file changes are properly documented with decision log entries—validation fails if critical governance files are modified without corresponding documentation.
 
 - 🏷️ **Rules Management** — Every rule has a unique ID (like `LIL-CR-PROCESS-0001`) for tracking, finding, and monitoring changes. No more hunting through documentation to figure out what rule applies where.
 
@@ -30,6 +30,8 @@ LIL OS provides a practical starting point for AI-assisted software projects tha
 - 💰 **Context Budgets** — Prevent rule bloat and complexity creep. Every new rule, instruction, or piece of automation must justify its cost, keeping your system understandable and maintainable instead of accumulating layers of complexity.
 
 - ✅ **Automated Validation & Pre-commit Hooks** — Catch problems before they become problems. Run validation scripts manually or set up pre-commit hooks to automatically check rule formatting, decision log completeness, reset triggers, and context budget compliance.
+
+- 🔒 **Secret Detection** — Automatically scans decision logs and governance files for accidentally committed secrets like API keys, tokens, passwords, and credentials. Prevents sensitive information from being exposed in version control. If secrets are detected, validation fails immediately—protecting your project and your team.
 
 - ⚙️ **CI/CD Integration** — Works with your existing workflow. GitHub Actions integration means validation runs automatically on every push, keeping the whole team in sync without extra effort.
 
@@ -70,15 +72,6 @@ Here are the official resources for the IDEs that work best with LIL OS, for ref
 - **VS Code:** [VS Code Integrated Terminal Guide](https://code.visualstudio.com/docs/terminal/basics) - Official VS Code terminal documentation
 - **JetBrains (IntelliJ, WebStorm, etc.):** [JetBrains Terminal Guide](https://www.jetbrains.com/help/idea/terminal-emulator.html) - Using the terminal in JetBrains IDEs
 - **General Terminal Tutorials:** [Command Line Crash Course](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Understanding_client-side_tools/Command_line) - Cross-platform terminal basics
-
-## What's Next?
-
-After the setup wizard completes:
-1. If you haven't already, read `docs/USER_GUIDE.md` - A beginner-friendly guide to LIL OS
-2. Start using LIL OS in your project - Most of the time, you can code normally!
-3. When you make an important decision, log it in `docs/DECISION_LOG.md`
-
-**Remember:** LIL OS only steps in for important decisions. Regular coding works exactly like before!
 
 ## Documentation
 

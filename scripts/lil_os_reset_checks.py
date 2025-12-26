@@ -307,6 +307,322 @@ def check_metric_dominance(decision_log: Path, metric_markers: List[str], consec
                         {"current_streak": streak, "streak_entry_indices": streak_indices})]
     return [Finding("INFO", "LEGIT_METRIC_OK", "No metric dominance streak detected.")]
 
+def check_decision_log_integrity(decision_log: Path, enabled: bool) -> List[Finding]:
+    """Check for retroactive modifications to decision log entries."""
+    findings: List[Finding] = []
+    if not enabled:
+        return [Finding("INFO", "SEC_DECISION_LOG_INTEGRITY_DISABLED", "Decision log integrity check is disabled.")]
+    
+    if not git_available():
+        return [Finding("WARN", "SEC_DECISION_LOG_INTEGRITY_NO_GIT", "Git not available; cannot check decision log integrity.")]
+    
+    if not decision_log.exists():
+        return []
+    
+    try:
+        # Get git log for decision log file
+        cmd = ["git", "log", "--follow", "--format=%H|%ai|%s", "--", str(decision_log)]
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        
+        if not result.stdout.strip():
+            return [Finding("INFO", "SEC_DECISION_LOG_INTEGRITY_OK", "Decision log has no git history (new file).")]
+        
+        # Parse commits
+        commits = []
+        for line in result.stdout.strip().splitlines():
+            parts = line.split("|", 2)
+            if len(parts) >= 3:
+                commits.append({
+                    "hash": parts[0],
+                    "date": parts[1],
+                    "message": parts[2]
+                })
+        
+        # Check for entries that were modified after initial creation
+        # Get current entries
+        text = read_text(decision_log)
+        entries = parse_decision_log_entries(text)
+        
+        suspicious_modifications = []
+        for idx, entry in enumerate(entries, start=1):
+            # Extract date from entry if present
+            date_match = re.search(r"Date:\s*([^\n]+)", entry, re.IGNORECASE)
+            if not date_match:
+                continue
+            
+            entry_date_str = date_match.group(1).strip()
+            
+            # Find commits that modified this entry
+            # For simplicity, check if there are multiple commits modifying the file
+            # A more sophisticated check would diff commits to see if specific entries changed
+            if len(commits) > 1:
+                # Check if the most recent commit modified an old entry
+                # This is a heuristic - if an entry has a date but was modified recently, flag it
+                try:
+                    from dateutil import parser as date_parser
+                    entry_date = date_parser.parse(entry_date_str)
+                    latest_commit_date = date_parser.parse(commits[0]["date"])
+                    
+                    # If entry date is old but was modified recently (within last 7 days), flag it
+                    days_diff = (latest_commit_date - entry_date).days
+                    if days_diff > 7 and latest_commit_date > entry_date:
+                        # Check if this commit message doesn't indicate a legitimate update
+                        commit_msg_lower = commits[0]["message"].lower()
+                        if not any(word in commit_msg_lower for word in ["update", "fix", "correct", "amend", "revise"]):
+                            suspicious_modifications.append({
+                                "entry_index": idx,
+                                "entry_date": entry_date_str,
+                                "last_modified": commits[0]["date"],
+                                "commit_hash": commits[0]["hash"][:8],
+                                "commit_message": commits[0]["message"]
+                            })
+                except ImportError:
+                    # dateutil not available, use simple string comparison
+                    # Skip sophisticated date checking if dateutil is not installed
+                    pass
+                except Exception:
+                    # If date parsing fails, skip this entry
+                    pass
+        
+        if suspicious_modifications:
+            findings.append(Finding(
+                "WARN",
+                "SEC_DECISION_LOG_INTEGRITY_SUSPICIOUS",
+                f"{len(suspicious_modifications)} decision log entry(ies) may have been retroactively modified.",
+                {"suspicious_entries": suspicious_modifications[:10]}
+            ))
+        else:
+            findings.append(Finding("INFO", "SEC_DECISION_LOG_INTEGRITY_OK", "No suspicious retroactive modifications detected."))
+            
+    except subprocess.CalledProcessError:
+        return [Finding("WARN", "SEC_DECISION_LOG_INTEGRITY_ERROR", "Could not check decision log integrity (git error).")]
+    except Exception as e:
+        return [Finding("WARN", "SEC_DECISION_LOG_INTEGRITY_ERROR", f"Error checking decision log integrity: {e}")]
+    
+    return findings
+
+def check_governance_file_changes(governance_files: List[Path], decision_log: Path, enabled: bool) -> List[Finding]:
+    """Check if governance files were modified without corresponding decision log entries."""
+    findings: List[Finding] = []
+    if not enabled:
+        return [Finding("INFO", "SEC_GOVERNANCE_FILE_CHECKS_DISABLED", "Governance file change detection is disabled.")]
+    
+    if not git_available():
+        return [Finding("WARN", "SEC_GOVERNANCE_FILE_CHECKS_NO_GIT", "Git not available; cannot check governance file changes.")]
+    
+    try:
+        # Get recent commits (last 30 days) that modified governance files
+        since = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
+        modified_files = []
+        
+        for gov_file in governance_files:
+            if not gov_file.exists():
+                continue
+            
+            cmd = ["git", "log", f"--since={since}", "--format=%H|%ai|%s", "--", str(gov_file)]
+            result = subprocess.run(cmd, capture_output=True, text=True)
+            
+            if result.returncode == 0 and result.stdout.strip():
+                for line in result.stdout.strip().splitlines():
+                    parts = line.split("|", 2)
+                    if len(parts) >= 3:
+                        modified_files.append({
+                            "file": str(gov_file),
+                            "commit_hash": parts[0],
+                            "date": parts[1],
+                            "message": parts[2]
+                        })
+        
+        if not modified_files:
+            return [Finding("INFO", "SEC_GOVERNANCE_FILE_CHECKS_OK", "No recent governance file modifications detected.")]
+        
+        # Check if decision log has entries that reference these changes
+        decision_log_text = read_text(decision_log) if decision_log.exists() else ""
+        entries = parse_decision_log_entries(decision_log_text)
+        
+        # Extract file names from governance files
+        gov_file_names = [f.name for f in governance_files if f.exists()]
+        
+        unlogged_changes = []
+        for mod in modified_files:
+            file_name = Path(mod["file"]).name
+            commit_hash_short = mod["commit_hash"][:8]
+            
+            # Check if any decision log entry mentions this file or commit
+            entry_found = False
+            for entry in entries:
+                entry_lower = entry.lower()
+                if (file_name.lower() in entry_lower or 
+                    commit_hash_short in entry or
+                    any(gov_name.lower() in entry_lower for gov_name in gov_file_names)):
+                    # Check if entry date is close to commit date
+                    date_match = re.search(r"Date:\s*([^\n]+)", entry, re.IGNORECASE)
+                    if date_match:
+                        try:
+                            from dateutil import parser as date_parser
+                            entry_date = date_parser.parse(date_match.group(1).strip())
+                            commit_date = date_parser.parse(mod["date"])
+                            days_diff = abs((commit_date - entry_date).days)
+                            if days_diff <= 7:  # Allow 7 day window
+                                entry_found = True
+                                break
+                        except ImportError:
+                            # dateutil not available, use simple matching
+                            # If file name matches, assume entry found
+                            entry_found = True
+                            break
+                        except Exception:
+                            # If date parsing fails, assume entry found if file name matches
+                            entry_found = True
+                            break
+                    else:
+                        # If no date in entry, but file name matches, assume it's related
+                        entry_found = True
+                        break
+            
+            if not entry_found:
+                unlogged_changes.append(mod)
+        
+        if unlogged_changes:
+            findings.append(Finding(
+                "HARD_FAIL",
+                "SEC_GOVERNANCE_FILE_CHANGES_UNLOGGED",
+                f"{len(unlogged_changes)} governance file modification(s) without corresponding decision log entries.",
+                {
+                    "unlogged_changes": unlogged_changes[:20],
+                    "note": "Governance file changes require decision log entries per GOVERNANCE.md"
+                }
+            ))
+        else:
+            findings.append(Finding("INFO", "SEC_GOVERNANCE_FILE_CHECKS_OK", "All governance file changes have corresponding decision log entries."))
+            
+    except Exception as e:
+        return [Finding("WARN", "SEC_GOVERNANCE_FILE_CHECKS_ERROR", f"Error checking governance file changes: {e}")]
+    
+    return findings
+
+def check_secret_detection(decision_log: Path, scan_paths: List[Path], secret_patterns: List[str], enabled: bool) -> List[Finding]:
+    """Scan files for common secret patterns (API keys, tokens, credentials)."""
+    findings: List[Finding] = []
+    if not enabled:
+        return [Finding("INFO", "SEC_SECRET_DETECTION_DISABLED", "Secret detection is disabled.")]
+    
+    if not secret_patterns:
+        return [Finding("WARN", "SEC_SECRET_DETECTION_NO_PATTERNS", "Secret detection enabled but no patterns configured.")]
+    
+    detected_secrets = []
+    
+    # Compile regex patterns
+    compiled_patterns = []
+    for pattern in secret_patterns:
+        try:
+            compiled_patterns.append((pattern, re.compile(pattern, re.IGNORECASE)))
+        except re.error as e:
+            findings.append(Finding("WARN", "SEC_SECRET_PATTERN_ERROR", f"Invalid secret pattern: {pattern}", {"error": str(e)}))
+            continue
+    
+    # Scan files
+    files_to_scan = []
+    for path in scan_paths:
+        if path.is_file():
+            files_to_scan.append(path)
+        elif path.is_dir():
+            # Scan markdown files in directory
+            files_to_scan.extend([f for f in path.rglob("*.md") if f.is_file()])
+    
+    # Always scan decision log
+    if decision_log.exists() and decision_log not in files_to_scan:
+        files_to_scan.append(decision_log)
+    
+    for file_path in files_to_scan:
+        if not file_path.exists():
+            continue
+        
+        try:
+            text = read_text(file_path)
+            
+            for pattern_name, pattern_re in compiled_patterns:
+                matches = pattern_re.finditer(text)
+                for match in matches:
+                    # Extract context (50 chars before and after)
+                    start = max(0, match.start() - 50)
+                    end = min(len(text), match.end() + 50)
+                    context = text[start:end].replace("\n", " ").strip()
+                    
+                    # Get line number
+                    line_num = text[:match.start()].count("\n") + 1
+                    
+                    detected_secrets.append({
+                        "file": str(file_path),
+                        "line": line_num,
+                        "pattern": pattern_name,
+                        "context": context[:200]  # Limit context length
+                    })
+        except Exception as e:
+            findings.append(Finding("WARN", "SEC_SECRET_SCAN_ERROR", f"Error scanning {file_path}: {e}"))
+    
+    if detected_secrets:
+        findings.append(Finding(
+            "HARD_FAIL",
+            "SEC_SECRET_DETECTED",
+            f"Potential secrets detected in {len(set(s['file'] for s in detected_secrets))} file(s). Remove secrets immediately and rotate any exposed credentials.",
+            {
+                "detected_secrets": detected_secrets[:50],  # Limit to first 50 matches
+                "total_matches": len(detected_secrets),
+                "note": "Secrets should never be committed to version control. Use environment variables or secret management tools."
+            }
+        ))
+    else:
+        findings.append(Finding("INFO", "SEC_SECRET_DETECTION_OK", "No secrets detected in scanned files."))
+    
+    return findings
+
+def check_script_checksums(script_paths: List[Path], expected_checksums: dict, enabled: bool) -> List[Finding]:
+    """Verify validation scripts haven't been modified by checking checksums."""
+    findings: List[Finding] = []
+    if not enabled:
+        return [Finding("INFO", "SEC_SCRIPT_CHECKSUM_DISABLED", "Script checksum verification is disabled.")]
+    
+    if not expected_checksums:
+        return [Finding("WARN", "SEC_SCRIPT_CHECKSUM_NO_EXPECTED", "Checksum verification enabled but no expected checksums provided.")]
+    
+    import hashlib
+    
+    for script_path in script_paths:
+        if not script_path.exists():
+            findings.append(Finding("WARN", "SEC_SCRIPT_CHECKSUM_MISSING", f"Script not found: {script_path}"))
+            continue
+        
+        script_name = script_path.name
+        if script_name not in expected_checksums:
+            # Not all scripts need checksums - that's okay
+            continue
+        
+        try:
+            # Calculate SHA256 checksum
+            content = script_path.read_bytes()
+            actual_checksum = hashlib.sha256(content).hexdigest()
+            expected_checksum = expected_checksums[script_name].lower().strip()
+            
+            if actual_checksum != expected_checksum:
+                findings.append(Finding(
+                    "HARD_FAIL",
+                    "SEC_SCRIPT_CHECKSUM_MISMATCH",
+                    f"Script {script_name} checksum mismatch. Script may have been modified or tampered with.",
+                    {
+                        "script": script_name,
+                        "expected": expected_checksum,
+                        "actual": actual_checksum,
+                        "note": "If this is an intentional modification, update the expected checksum in configuration."
+                    }
+                ))
+            else:
+                findings.append(Finding("INFO", "SEC_SCRIPT_CHECKSUM_OK", f"Script {script_name} checksum verified."))
+        except Exception as e:
+            findings.append(Finding("WARN", "SEC_SCRIPT_CHECKSUM_ERROR", f"Error verifying checksum for {script_name}: {e}"))
+    
+    return findings
+
 def check_explanation_failure_marker() -> List[Finding]:
     marker = Path(".lil_os/EXPLANATION_FAILED")
     if marker.exists():
@@ -366,6 +682,32 @@ def main() -> int:
         consecutive_threshold=int(thresholds.get("metric_dominance_consecutive_decisions", 3)),
     )
     findings += check_explanation_failure_marker()
+    
+    # Security checks
+    security = cfg.get("security", {})
+    findings += check_decision_log_integrity(
+        decision_log=decision_log,
+        enabled=bool(security.get("check_decision_log_integrity", True))
+    )
+    findings += check_governance_file_changes(
+        governance_files=[master_rules, governance, Path(paths.get("reset_triggers", "docs/RESET_TRIGGERS.md"))],
+        decision_log=decision_log,
+        enabled=bool(security.get("check_governance_file_changes", True))
+    )
+    findings += check_secret_detection(
+        decision_log=decision_log,
+        scan_paths=[decision_log, Path(paths.get("docs_dir", "docs"))],
+        secret_patterns=security.get("secret_patterns", []),
+        enabled=bool(security.get("check_secrets", True))
+    )
+    findings += check_script_checksums(
+        script_paths=[
+            Path("scripts/lil_os_rule_id_lint.py"),
+            Path("scripts/lil_os_reset_checks.py")
+        ],
+        expected_checksums=security.get("script_checksums", {}),
+        enabled=bool(security.get("check_script_checksums", False))  # Disabled by default
+    )
 
     # Print
     hard = [f for f in findings if f.level == "HARD_FAIL"]

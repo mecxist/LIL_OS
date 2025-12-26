@@ -46,3 +46,39 @@ conventions:
     - "Purpose:"
     - "Retention:"
     - "Review Trigger:"
+
+security:
+  check_decision_log_integrity: true
+  check_governance_file_changes: true
+  check_secrets: true
+  check_script_checksums: false  # Enable manually after setting expected checksums
+  secret_patterns:
+    # API Keys
+    - "(?i)(api[_-]?key|apikey)[\s:=]+['\"]?([a-zA-Z0-9_\-]{20,})['\"]?"
+    - "(?i)(secret[_-]?key|secretkey)[\s:=]+['\"]?([a-zA-Z0-9_\-]{20,})['\"]?"
+    - "(?i)(access[_-]?token|accesstoken)[\s:=]+['\"]?([a-zA-Z0-9_\-]{20,})['\"]?"
+    - "(?i)(bearer[_-]?token|bearertoken)[\s:=]+['\"]?([a-zA-Z0-9_\-]{20,})['\"]?"
+    # AWS
+    - "(?i)(aws[_-]?access[_-]?key[_-]?id)[\s:=]+['\"]?(AKIA[0-9A-Z]{16})['\"]?"
+    - "(?i)(aws[_-]?secret[_-]?access[_-]?key)[\s:=]+['\"]?([a-zA-Z0-9/+=]{40})['\"]?"
+    # GitHub
+    - "(?i)(github[_-]?token|ghp_[a-zA-Z0-9]{36})"
+    - "(?i)(gho_[a-zA-Z0-9]{36})"
+    - "(?i)(ghu_[a-zA-Z0-9]{36})"
+    - "(?i)(ghs_[a-zA-Z0-9]{36})"
+    - "(?i)(ghr_[a-zA-Z0-9]{76})"
+    # Generic tokens
+    - "(?i)(token|auth[_-]?token)[\s:=]+['\"]?([a-zA-Z0-9_\-]{32,})['\"]?"
+    # Passwords
+    - "(?i)(password|passwd|pwd)[\s:=]+['\"]?([^\s'\"]{8,})['\"]?"
+    # Private keys
+    - "-----BEGIN[\\s]+(RSA|DSA|EC|OPENSSH)[\\s]+PRIVATE[\\s]+KEY-----"
+    # Database connections
+    - "(?i)(database[_-]?url|db[_-]?url|connection[_-]?string)[\s:=]+['\"]?(mongodb|postgres|mysql|redis)://[^\s'\"]+['\"]?"
+    # OAuth
+    - "(?i)(client[_-]?secret|oauth[_-]?secret)[\s:=]+['\"]?([a-zA-Z0-9_\-]{20,})['\"]?"
+  script_checksums:
+    # SHA256 checksums - update these when scripts are intentionally modified
+    # To calculate: python3 -c "import hashlib; print(hashlib.sha256(open('scripts/FILENAME','rb').read()).hexdigest())"
+    lil_os_rule_id_lint.py: "d6d34849d33b366a40a923f793f25693866c905a55f1c9dc061cdec28e7c4a35"
+    lil_os_reset_checks.py: "4af39f26137b05d6aef5309963f315d08ca47057c530341ff757aa4c5aed46ae"
