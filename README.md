@@ -11,7 +11,7 @@ Unlike tools that only manage code execution and resources, LIL OS implements a 
 > In this way, governance is deliberate friction, applied at points of irreversible change because some decisions require justification, not just permission.
 
 ## What exactly does LIL OS do?
-LIL OS gives you a set of practical tools to keep you from being at the mercy of your agentic tools:
+LIL OS provides a practical starting point for AI-assisted software projects that keeps you from being at the mercy of your agentic tools:
 
 **Key Features:**
 
@@ -36,9 +36,9 @@ LIL OS gives you a set of practical tools to keep you from being at the mercy of
 ## IDE Compatibility & Environment Adaptation
 
 LIL OS is **optimized for local development** that uses IDEs with integrated AI agents like Cursor AI, Claude Code, Codex, Gemini CLI, etc. :
-- **Cursor** (with Cursor AI)
-- **VS Code** (with GitHub Copilot, Cursor extension, or other AI assistants)
-- **JetBrains IDEs** (IntelliJ IDEA, WebStorm, PyCharm, etc. with AI plugins)
+- **Cursor** (with Cursor AI) — Free tier available; Pro subscription ~$20/month for unlimited AI usage
+- **VS Code** (with GitHub Copilot, Cursor extension, or other AI assistants) — IDE is free; GitHub Copilot is $10/month for individuals (free for students/teachers)
+- **JetBrains IDEs** (IntelliJ IDEA, WebStorm, PyCharm, etc. with AI plugins) — Free Community editions available; Professional editions ~$149-199/year for individuals (discounted after first year)
 
 **Claude Pro Subscription Optimization:** If you're a Claude Pro or Max subscriber, we **strongly recommend** using Claude Code directly in your IDE terminal rather than via an API integration. This ensures you benefit from your flat-rate subscription allowance without additional API token charges, while maintaining seamless integration with LIL OS's governance features.
 
@@ -48,37 +48,21 @@ The framework works best in these environments because it relies on:
 - Terminal access for running validation scripts
 - Direct integration with your development workflow
 
+So we recommend you do some research and decide which of these IDEs you prefer. VS Code is
+
 **Not using a local IDE with integrated AI agents?** See the [Adapting LIL OS](docs/CONTRIBUTING.md#adapting-lil-os-for-web-based-environments) section in CONTRIBUTING.md for guidance (note: adaptations are done at your own risk and may result in limited functionality).
-
-## Quick Start Guide (Using Chat Prompts)
-
-If you're not comfortable with the terminal (yet), copy the following prompt to your AI assistant or take this opportunity to learn more about terminal commands using the resourced we provide below the prompt:
-
-```
-I want to set up LIL OS in my project. Please help me step by step:
-
-1. First, check if Python 3 is installed on my system by having me run: python3 --version
-2. If Python isn't installed, guide me through installing it for my operating system
-3. Help me download or clone the LIL OS repository from https://github.com/mecxist/LIL_OS
-4. Navigate to the LIL_OS folder in terminal
-5. Run the setup wizard: python3 scripts/setup_wizard.py
-6. Guide me through answering the setup wizard's questions
-7. Explain what each step does in simple terms
-
-Start with step 1 and wait for me to confirm before moving to the next step.
-```
-
-Your AI assistant will walk you through everything!
-
-**Want to learn the terminal?** Here are the official resources for the IDEs that work best with LIL OS, for refernce:
-- **Cursor:** [Cursor Terminal Documentation](https://docs.cursor.com/features/terminal) - Learn how to use the integrated terminal in Cursor
-- **VS Code:** [VS Code Integrated Terminal Guide](https://code.visualstudio.com/docs/terminal/basics) - Official VS Code terminal documentation
-- **JetBrains (IntelliJ, WebStorm, etc.):** [JetBrains Terminal Guide](https://www.jetbrains.com/help/idea/terminal-emulator.html) - Using the terminal in JetBrains IDEs
-- **General Terminal Tutorials:** [Command Line Crash Course](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Understanding_client-side_tools/Command_line) - Cross-platform terminal basics
 
 ---
 
 ## Quick Start Guide (Using Terminal Commands)
+
+**Not comfortable in the terminal (yet)?** We've provided a comprehenisve list of resources to help you get familiar with the terminal within the IDEs we recommend along with easily to follow installation instructions below:
+
+Here are the official resources for the IDEs that work best with LIL OS, for referrence:
+- **Cursor:** [Cursor Terminal Documentation](https://docs.cursor.com/features/terminal) - Learn how to use the integrated terminal in Cursor
+- **VS Code:** [VS Code Integrated Terminal Guide](https://code.visualstudio.com/docs/terminal/basics) - Official VS Code terminal documentation
+- **JetBrains (IntelliJ, WebStorm, etc.):** [JetBrains Terminal Guide](https://www.jetbrains.com/help/idea/terminal-emulator.html) - Using the terminal in JetBrains IDEs
+- **General Terminal Tutorials:** [Command Line Crash Course](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Understanding_client-side_tools/Command_line) - Cross-platform terminal basics
 
 ### Step 0: Check if you have Python installed
 
