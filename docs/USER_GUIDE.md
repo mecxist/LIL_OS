@@ -35,6 +35,26 @@ Before you start, make sure you have:
 3. If you see a version number (like "Python 3.9.0"), you're good to go!
 4. If you get an error, you'll need to install Python 3 first
 
+### Alternative: Getting Set Up (Using Chat Prompts)
+
+**Not comfortable with terminal commands yet?** That's okay! You can use your AI assistant to guide you through the setup process. Copy and paste this prompt to your AI assistant:
+
+```
+I want to set up LIL OS in my project. Please help me step by step:
+
+1. First, check if Python 3 is installed on my system by having me run: python3 --version
+2. If Python isn't installed, guide me through installing it for my operating system
+3. Help me download or clone the LIL OS repository from https://github.com/mecxist/LIL_OS
+4. Navigate to the LIL_OS folder in terminal
+5. Run the setup wizard: python3 scripts/setup_wizard.py
+6. Guide me through answering the setup wizard's questions
+7. Explain what each step does in simple terms
+
+Start with step 1 and wait for me to confirm before moving to the next step.
+```
+
+Your AI assistant will walk you through everything! This is a great way to learn while getting help, and you'll gradually become more comfortable with terminal commands.
+
 ### Step 2: Setting Up LIL OS
 
 The easiest way to get started is using the setup wizard. This is also a great opportunity to get familiar with using terminal commands in your IDE!

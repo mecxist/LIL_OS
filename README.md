@@ -15,23 +15,15 @@ LIL OS provides a practical starting point for AI-assisted software projects tha
 
 **Key Features:**
 
-- 🚀 **Setup Wizard** — Get started in minutes! The setup wizard walks you through initializing LIL OS, configuring governance rules, and setting up validation. Read the User Guide first to understand how your setup choices impact your system design.
-
-- 📁 **Standardized Project Structure** — Organized governance from day one. LIL OS provides a best-practices directory and file structure that keeps all governance files, rules, decision logs, and validation scripts in the right places. Your team and AI assistants can find and enforce rules consistently—no more wondering where things belong.
-
-- ⚖️ **Governance Without Bureaucracy** — Only important changes need governance (changes to goals, authority, or automation). Regular code changes work exactly like before—no red tape for everyday development.
-
-- 🏷️ **Rules Management** — Every rule has a unique ID (like `LIL-CR-PROCESS-0001`) for tracking, finding, and monitoring changes. No more hunting through documentation to figure out what rule applies where.
-
-- 📝 **File Auditing & Decision Logging** — Every important decision gets logged with who made it, why, and what tradeoffs were considered. Six months from now, you'll know exactly why a decision was made and whether it still makes sense. Perfect for teams or when you need to explain your choices.
-
-- 🛑 **Reset Triggers (Circuit Breakers)** — Automatic safety nets that pause and force scope reduction when: rules are added faster than removed, failures repeat without clear cause, the system can't explain its behavior, or optimization overrides important tradeoffs.
-
-- 💰 **Context Budgets** — Prevent rule bloat and complexity creep. Every new rule, instruction, or piece of automation must justify its cost, keeping your system understandable and maintainable instead of accumulating layers of complexity.
-
-- ✅ **Automated Validation & Pre-commit Hooks** — Catch problems before they become problems. Run validation scripts manually or set up pre-commit hooks to automatically check rule formatting, decision log completeness, reset triggers, and context budget compliance.
-
-- ⚙️ **CI/CD Integration** — Works with your existing workflow. GitHub Actions integration means validation runs automatically on every push, keeping the whole team in sync without extra effort.
+- 🚀 **Setup Wizard** 
+- 📁 **Standardized Project Structure** 
+- ⚖️ **Governance Without Bureaucracy**
+- 🏷️ **Rules Management**
+- 📝 **File Auditing & Decision Logging**
+- 🛑 **Reset Triggers (Circuit Breakers)** 
+- 💰 **Context Budgets**
+- ✅ **Automated Validation & Pre-commit Hooks**
+- ⚙️ **CI/CD Integration**
 
 ## IDE Compatibility & Environment Adaptation
 
@@ -48,15 +40,19 @@ The framework works best in these environments because it relies on:
 - Terminal access for running validation scripts
 - Direct integration with your development workflow
 
-So we recommend you do some research and decide which of these IDEs you prefer. VS Code is
+We recommend you research and decide on an IDE and install it, to best implement LIL OS in your next project, before moving on.
 
 **Not using a local IDE with integrated AI agents?** See the [Adapting LIL OS](docs/CONTRIBUTING.md#adapting-lil-os-for-web-based-environments) section in CONTRIBUTING.md for guidance (note: adaptations are done at your own risk and may result in limited functionality).
 
 ---
 
-## Quick Start Guide (Using Terminal Commands)
+## Getting Started (Using Terminal Commands) 
 
-**Not comfortable in the terminal (yet)?** We've provided a comprehenisve list of resources to help you get familiar with the terminal within the IDEs we recommend along with easily to follow installation instructions below:
+**Manual installation instructions are provided inline with Liberatory Intelligence principles** — we believe in empowering developers with the knowledge and skills to work autonomously in their development environments. These step-by-step terminal instructions help you learn fundamental skills while setting up LIL OS.
+
+**Not quite ready to do things manually yet, or want to get a feel for working within GitHub?** We understand! Read the [User Guide](docs/USER_GUIDE.md) which includes chat prompts you can use with your AI assistant to get guided help through the setup process.
+
+**Want to learn the terminal?** Here are resources to help you get familiar with the terminal within the IDEs we recommend:
 
 Here are the official resources for the IDEs that work best with LIL OS, for referrence:
 - **Cursor:** [Cursor Terminal Documentation](https://docs.cursor.com/features/terminal) - Learn how to use the integrated terminal in Cursor
@@ -169,6 +165,8 @@ Here are the official resources for the IDEs that work best with LIL OS, for ref
 
 ---
 
+
+
 ### Step 2: Run the Setup Wizard
 
 **Before running the setup wizard, we recommend reading `docs/USER_GUIDE.md`** (especially the "Setting Up LIL OS" section starting around line 38). The User Guide explains what questions the wizard will ask and how to answer them correctly, which is especially helpful if you're new to LIL OS or development tools.
@@ -202,8 +200,6 @@ After the setup wizard completes:
 **Remember:** LIL OS only steps in for important decisions. Regular coding works exactly like before!
 
 ## Documentation
-
-**New to LIL OS?** Start with `docs/USER_GUIDE.md` — a beginner-friendly guide written in plain language.
 
 See `docs/` for complete documentation:
 - `USER_GUIDE.md` — **start here!** Beginner-friendly guide with examples
