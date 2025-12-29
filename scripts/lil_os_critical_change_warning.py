@@ -24,6 +24,9 @@ from pathlib import Path
 from typing import List, Tuple, Optional
 from datetime import datetime
 
+# Add scripts directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent))
+
 # Import shared utilities
 from lil_os_utils import Colors
 

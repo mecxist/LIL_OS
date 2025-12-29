@@ -19,6 +19,9 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List, Tuple, Optional
 
+# Add scripts directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent))
+
 # Import shared utilities
 from lil_os_utils import Finding, load_simple_yaml, read_text, normalize_yaml_list
 
