@@ -57,7 +57,48 @@ Emergency overrides are permitted only when:
 
 All overrides MUST be logged retroactively in DECISION_LOG.md.
 
+## Team Adaptation
+
+The default governance model assumes a solo builder. For teams, adapt as follows:
+
+### Multi-Builder Decision Authority
+
+**Option 1: Consensus Model**
+- All team members review intent-level changes
+- Decision log entries require approval from all (or majority)
+- Use pull requests with required reviewers for governance file changes
+- Document consensus in decision log entry
+
+**Option 2: Delegation Model**
+- Designate specific team members as decision authorities for different domains
+- Document delegation in GOVERNANCE.md or decision log
+- Others can propose changes but require delegated authority approval
+- Maintains accountability through traceability
+
+**Option 3: Rotating Authority**
+- Decision authority rotates among team members on a schedule
+- Current authority documented in decision log or GOVERNANCE.md
+- All intent-level changes require current authority approval
+- Rotation logged as intent-level change
+
+### Team-Specific Considerations
+
+- **Shared Decision Log:** All team members can add entries, but intent-level changes require documented approval
+- **Branch Protection:** Use GitHub branch protection rules to enforce governance requirements
+- **CI/CD Enforcement:** Team workflows should rely on CI/CD as the enforcement layer (cannot be bypassed)
+- **Communication:** Document decision authority model in GOVERNANCE.md or project README
+
+### Extending the Solo-Builder Model
+
+The core principles remain the same:
+- Intent-level changes require justification
+- Decision log entries preserve accountability
+- Validation scripts catch violations
+- Governance is memory, not control
+
+Teams add structure (approval processes, delegation) but maintain the same accountability mechanisms.
+
 ## Governance Philosophy
-Governance doesn’t grant permission. It preserves legibility, reversibility, and accountability.
+Governance doesn't grant permission. It preserves legibility, reversibility, and accountability.
 
 Governance is memory — not control.

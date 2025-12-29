@@ -8,32 +8,8 @@ import os
 import sys
 from pathlib import Path
 
-# ANSI color codes for terminal output
-class Colors:
-    """ANSI color codes for terminal output."""
-    RESET = '\033[0m'
-    BOLD = '\033[1m'
-    DIM = '\033[2m'
-    
-    # Text colors
-    BLACK = '\033[30m'
-    RED = '\033[31m'
-    GREEN = '\033[32m'
-    YELLOW = '\033[33m'
-    BLUE = '\033[34m'
-    MAGENTA = '\033[35m'
-    CYAN = '\033[36m'
-    WHITE = '\033[37m'
-    
-    # Bright colors
-    BRIGHT_BLACK = '\033[90m'
-    BRIGHT_RED = '\033[91m'
-    BRIGHT_GREEN = '\033[92m'
-    BRIGHT_YELLOW = '\033[93m'
-    BRIGHT_BLUE = '\033[94m'
-    BRIGHT_MAGENTA = '\033[95m'
-    BRIGHT_CYAN = '\033[96m'
-    BRIGHT_WHITE = '\033[97m'
+# Import shared utilities
+from lil_os_utils import Colors
 
 def print_header():
     """Print colorful ASCII art header."""
@@ -181,15 +157,32 @@ def check_scripts():
         return False
 
 def setup_pre_commit():
-    """Offer to set up pre-commit hooks."""
+    """Offer to set up pre-commit hooks with clear explanation."""
+    print(f"\n{Colors.BRIGHT_CYAN}{'='*60}{Colors.RESET}")
+    print(f"{Colors.BOLD}  Pre-commit Hooks Setup{Colors.RESET}")
+    print(f"{Colors.BRIGHT_CYAN}{'='*60}{Colors.RESET}")
+    print(f"\n{Colors.WHITE}Pre-commit hooks automatically check your code before you commit.{Colors.RESET}")
+    print(f"\n{Colors.BRIGHT_GREEN}Benefits:{Colors.RESET}")
+    print(f"  {Colors.GREEN}✓{Colors.RESET} Warns you about critical changes (governance files, missing decision logs)")
+    print(f"  {Colors.GREEN}✓{Colors.RESET} Helps keep your documentation tidy when using multiple AI agents")
+    print(f"  {Colors.GREEN}✓{Colors.RESET} Catches problems before they're committed")
+    print(f"  {Colors.GREEN}✓{Colors.RESET} Safer collaboration with others")
+    print(f"\n{Colors.BRIGHT_YELLOW}Important:{Colors.RESET}")
+    print(f"  {Colors.YELLOW}•{Colors.RESET} Hooks provide {Colors.BOLD}warnings{Colors.RESET}, not blocks (you can still commit)")
+    print(f"  {Colors.YELLOW}•{Colors.RESET} You can bypass with {Colors.DIM}git commit --no-verify{Colors.RESET} if needed")
+    print(f"  {Colors.YELLOW}•{Colors.RESET} Designed to help inexperienced developers, not restrict experienced ones")
+    print(f"\n{Colors.BRIGHT_CYAN}{'='*60}{Colors.RESET}")
+    
     response = input(f"\n{Colors.BRIGHT_CYAN}🔧 Would you like to set up pre-commit hooks? (y/n): {Colors.RESET}").strip().lower()
     
     if response != 'y':
-        print(f"{Colors.DIM}   Skipping pre-commit setup (you can do this later){Colors.RESET}")
+        print(f"\n{Colors.DIM}   Skipping pre-commit setup (you can do this later){Colors.RESET}")
+        print(f"{Colors.DIM}   You can set it up manually by running: pip install pre-commit && pre-commit install{Colors.RESET}")
         return False
     
     try:
         import subprocess
+        print(f"\n{Colors.BRIGHT_BLUE}📦 Installing pre-commit...{Colors.RESET}")
         result = subprocess.run([sys.executable, "-m", "pip", "install", "pre-commit"], 
                               capture_output=True, text=True)
         if result.returncode == 0:
@@ -200,6 +193,13 @@ def setup_pre_commit():
                 config = """repos:
   - repo: local
     hooks:
+      - id: lil-os-critical-change-warning
+        name: LIL OS Critical Change Warning
+        entry: python3 scripts/lil_os_critical_change_warning.py --pre-commit
+        language: system
+        pass_filenames: false
+        always_run: true
+        verbose: true
       - id: lil-os-rule-id-lint
         name: LIL OS Rule ID Lint
         entry: python3 scripts/lil_os_rule_id_lint.py
@@ -215,19 +215,28 @@ def setup_pre_commit():
 """
                 pre_commit_config.write_text(config, encoding="utf-8")
                 print(f"{Colors.BRIGHT_GREEN}✅ Created .pre-commit-config.yaml{Colors.RESET}")
+            else:
+                print(f"{Colors.BRIGHT_YELLOW}⚠️  .pre-commit-config.yaml already exists{Colors.RESET}")
+                print(f"{Colors.YELLOW}   You may want to manually add the LIL OS hooks{Colors.RESET}")
             
+            print(f"\n{Colors.BRIGHT_BLUE}📝 Installing git hooks...{Colors.RESET}")
             result = subprocess.run(["pre-commit", "install"], capture_output=True, text=True)
             if result.returncode == 0:
-                print(f"{Colors.BRIGHT_GREEN}✅ Pre-commit hooks installed{Colors.RESET}")
+                print(f"{Colors.BRIGHT_GREEN}✅ Pre-commit hooks installed successfully!{Colors.RESET}")
+                print(f"\n{Colors.BRIGHT_MAGENTA}💡 Tip:{Colors.RESET} {Colors.DIM}The hooks will now run automatically before each commit.{Colors.RESET}")
+                print(f"{Colors.DIM}   They'll warn you about important changes but won't block your commits.{Colors.RESET}")
                 return True
             else:
                 print(f"{Colors.BRIGHT_YELLOW}⚠️  Could not install pre-commit hooks{Colors.RESET}")
                 print(f"{Colors.YELLOW}   Error: {result.stderr}{Colors.RESET}")
+                print(f"{Colors.YELLOW}   You can try running 'pre-commit install' manually{Colors.RESET}")
         else:
             print(f"{Colors.BRIGHT_YELLOW}⚠️  Could not install pre-commit{Colors.RESET}")
             print(f"{Colors.YELLOW}   Error: {result.stderr}{Colors.RESET}")
+            print(f"{Colors.YELLOW}   You may need to install it manually: pip install pre-commit{Colors.RESET}")
     except Exception as e:
         print(f"{Colors.BRIGHT_YELLOW}⚠️  Error setting up pre-commit: {e}{Colors.RESET}")
+        print(f"{Colors.YELLOW}   You can set it up manually later{Colors.RESET}")
     
     return False
 

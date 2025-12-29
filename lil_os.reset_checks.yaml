@@ -24,6 +24,11 @@ thresholds:
   metric_dominance_consecutive_decisions: 3
   override_normalization_per_window: 2
 
+checks:
+  check_automation_creep: true
+  check_rule_contradiction: true
+  use_enhanced_contradiction_detection: false
+
 conventions:
   decision_log_required_fields:
     - "Date:"
@@ -46,6 +51,27 @@ conventions:
     - "Purpose:"
     - "Retention:"
     - "Review Trigger:"
+  automation_keywords:
+    - "automate"
+    - "automation"
+    - "automatic"
+    - "auto-"
+    - "AI decision"
+    - "agent decides"
+    - "system chooses"
+    - "without human"
+    - "no human"
+    - "unattended"
+  forbidden_domains:
+    - "value judgment"
+    - "moral"
+    - "ethics"
+    - "ethical"
+    - "irreversible harm"
+    - "permanent damage"
+    - "without audit"
+    - "no audit trail"
+    - "no logging"
 
 security:
   check_decision_log_integrity: true

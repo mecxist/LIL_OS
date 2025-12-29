@@ -89,3 +89,31 @@ All resets MUST:
 - reduce scope before re-expansion
 - preserve reversibility
 - protect human agency
+
+---
+
+## Implementation Status
+
+This section shows which reset triggers are currently implemented in `scripts/lil_os_reset_checks.py` vs. documented above.
+
+### Implemented Triggers ✅
+
+- **Rule Accretion Velocity** - Detects when rules are added faster than removed over 30-day windows
+- **Justification Decay** - Checks decision log entries for missing required fields (Tradeoffs, rejected alternatives)
+- **Context Budget Overflow** - Validates against max rules, agents, and memory artifact limits
+- **Silent Memory Growth** - Checks memory artifacts for required metadata (Purpose, Retention, Review Trigger)
+- **Automation Creep** - Detects when automation expands into human-judgment domains by scanning decision logs for automation keywords and forbidden domains from CONTEXT_BUDGET.md
+- **Rule Contradiction** - Detects conflicting rules using pattern-based analysis. Identifies direct contradictions (MUST NOT vs MUST for same subject), soft contradictions (SHOULD NOT vs SHOULD), and explicit contradiction markers
+- **Override Normalization** - Detects when emergency overrides become routine (2+ in 30 days)
+- **Metric Dominance** - Identifies when single metric repeatedly overrides tradeoffs (3 consecutive decisions)
+- **Explanation Failure** - Checks for `.lil_os/EXPLANATION_FAILED` marker file
+
+### Documented but Not Yet Implemented ⚠️
+
+- **Rule Contradiction (Enhanced)** - Basic pattern-based detection implemented. Enhanced semantic analysis using NLP planned for v0.3.0 to detect subtle contradictions that pattern matching may miss.
+
+### Notes
+
+- All implemented triggers run automatically via pre-commit hooks and CI/CD
+- Non-implemented triggers should be manually reviewed until implemented
+- See `RELEASE_ASSESSMENT.md` for detailed analysis of implementation gaps

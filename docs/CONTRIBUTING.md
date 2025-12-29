@@ -7,24 +7,24 @@ Thank you for your interest in contributing to LIL OS! This document explains ho
 ### Open Contributions (Anyone Can Contribute)
 
 No approval required:
-- **Bug fixes** — Fixing errors in scripts, documentation, or tooling
-- **Documentation improvements** — Clarifying explanations, adding examples, fixing typos
-- **Code refactoring** — Improving code quality without changing behavior
-- **Tooling enhancements** — Adding features to validation scripts or CI/CD integration
-- **Examples and use cases** — Documenting how LIL OS is used in practice
+- **Bug fixes** - Fixing errors in scripts, documentation, or tooling
+- **Documentation improvements** - Clarifying explanations, adding examples, fixing typos
+- **Code refactoring** - Improving code quality without changing behavior
+- **Tooling enhancements** - Adding features to validation scripts or CI/CD integration
+- **Examples and use cases** - Documenting how LIL OS is used in practice
 
 **Process:** Fork → Branch → PR → Review → Merge
 
 ### Official Contributor Required
 
 These require Official Contributor status (see [Joining the Collective](#joining-the-collective) below):
-- **Changes to governance principles** — Modifying GOVERNANCE.md, CONTEXT_BUDGET.md, RESET_TRIGGERS.md
-- **Modifications to core rules** — Changing MASTER_RULES.md or RULE_IDS.md
-- **Changes to system scope** — Expanding or contracting what LIL OS governs
-- **Automation expansions** — Adding new automated checks or processes
-- **Philosophical changes** — Altering the underlying principles of Liberatory Intelligence
-- **Major platform adaptations** — Extending LIL OS to work with new IDEs, platforms, or environments
-- **Architectural changes** — Modifications to core systems and infrastructure
+- **Changes to governance principles** - Modifying GOVERNANCE.md, CONTEXT_BUDGET.md, RESET_TRIGGERS.md
+- **Modifications to core rules** - Changing MASTER_RULES.md or RULE_IDS.md
+- **Changes to system scope** - Expanding or contracting what LIL OS governs
+- **Automation expansions** - Adding new automated checks or processes
+- **Philosophical changes** - Altering the underlying principles of Liberatory Intelligence
+- **Major platform adaptations** - Extending LIL OS to work with new IDEs, platforms, or environments
+- **Architectural changes** - Modifications to core systems and infrastructure
 
 **Why?** Intent-level changes affect the fundamental principles of LIL OS. Official Contributors have demonstrated alignment with Liberatory Intelligence principles and commitment to the project's mission.
 
@@ -45,26 +45,26 @@ These require Official Contributor status (see [Joining the Collective](#joining
    python3 scripts/lil_os_reset_checks.py
    ```
 4. **Submit a pull request** with a clear description
-5. **Wait for review** — Maintainers will review and merge
+5. **Wait for review** - Maintainers will review and merge
 
 ### For Intent-Level Changes (Official Contributors Only)
 
-1. **Read the governance docs** — Understand `docs/GOVERNANCE.md`
-2. **Propose the change** — Open an issue explaining what, why, who benefits, tradeoffs, and alternatives
-3. **Get feedback** — Discuss with maintainers and community
-4. **Create a decision log entry** — Document in `docs/DECISION_LOG.md`
+1. **Read the governance docs** - Understand `docs/GOVERNANCE.md`
+2. **Propose the change** - Open an issue explaining what, why, who benefits, tradeoffs, and alternatives
+3. **Get feedback** - Discuss with maintainers and community
+4. **Create a decision log entry** - Document in `docs/DECISION_LOG.md`
 5. **Implement the change**
 6. **Run validation scripts**
-7. **Submit a pull request** — Include decision log entry and justification
+7. **Submit a pull request** - Include decision log entry and justification
 
 ## Contribution Guidelines
 
 - **Be respectful**
-- **Explain your reasoning** — Especially for intent-level changes
-- **Consider reversibility** — Ensure changes can be understood and potentially rolled back
-- **Follow existing patterns** — Match style and structure
-- **Test your changes** — Run validation scripts before submitting
-- **Keep scope focused** — One clear change per pull request
+- **Explain your reasoning** - Especially for intent-level changes
+- **Consider reversibility** - Ensure changes can be understood and potentially rolled back
+- **Follow existing patterns** - Match style and structure
+- **Test your changes** - Run validation scripts before submitting
+- **Keep scope focused** - One clear change per pull request
 
 ## Adapting LIL OS for Web-Based Environments
 
@@ -142,11 +142,11 @@ If you successfully adapt LIL OS for a web-based environment, consider contribut
 **What we're looking for:**
 
 Commitment to:
-- **Ethical technology** — Systems that respect user autonomy and dignity
-- **Liberatory design** — Technologies that restore human agency
-- **Cyber Syndicalism** — Organizing infrastructure itself, treating software and AI as means of production
-- **Governance through architecture** — Enforcing accountability through design
-- **Collective intelligence** — Systems that enable coordination and collective power
+- **Ethical technology** - Systems that respect user autonomy and dignity
+- **Liberatory design** - Technologies that restore human agency
+- **Cyber Syndicalism** - Organizing infrastructure itself, treating software and AI as means of production
+- **Governance through architecture** - Enforcing accountability through design
+- **Collective intelligence** - Systems that enable coordination and collective power
 
 **Roles:** Technical talents, creative talents, strategic talents
 
@@ -172,4 +172,4 @@ LIL OS follows its own governance rules. Any intent-level changes to LIL OS itse
 
 ---
 
-**Remember:** Governance doesn't grant permission. It preserves legibility, reversibility, and accountability. Governance is memory—not control.
+**Remember:** Governance doesn't grant permission. It preserves legibility, reversibility, and accountability. Governance is memory, not control.

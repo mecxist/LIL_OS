@@ -19,81 +19,12 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List, Tuple, Optional
 
-# ----------------------------
-# Tiny YAML loader (subset)
-# ----------------------------
-def load_simple_yaml(path: Path) -> dict:
-    text = path.read_text(encoding="utf-8")
-    lines = [ln.rstrip("\n") for ln in text.splitlines() if ln.strip() and not ln.strip().startswith("#")]
-    root: dict = {}
-    stack: List[Tuple[int, dict | list]] = [(0, root)]
-    current_key_stack: List[Optional[str]] = [None]
-
-    def parse_value(v: str):
-        v = v.strip()
-        if v.isdigit():
-            return int(v)
-        # Handle boolean values
-        if v.lower() == 'true':
-            return True
-        if v.lower() == 'false':
-            return False
-        if (v.startswith('"') and v.endswith('"')) or (v.startswith("'") and v.endswith("'")):
-            return v[1:-1]
-        return v
-
-    for ln in lines:
-        indent = len(ln) - len(ln.lstrip(" "))
-        ln = ln.lstrip(" ")
-        while stack and indent < stack[-1][0]:
-            stack.pop()
-            current_key_stack.pop()
-
-        container = stack[-1][1]
-
-        if ln.startswith("- "):
-            item = parse_value(ln[2:])
-            if not isinstance(container, list):
-                key = current_key_stack[-1]
-                if key is None or not isinstance(container, dict):
-                    raise ValueError(f"List item without list context near: {ln}")
-                if key not in container or not isinstance(container[key], list):
-                    container[key] = []
-                container = container[key]
-                stack.append((indent, container))
-                current_key_stack.append(key)
-            container.append(item)
-            continue
-
-        if ":" in ln:
-            key, rest = ln.split(":", 1)
-            key = key.strip()
-            rest = rest.strip()
-            if isinstance(container, list):
-                raise ValueError(f"Unexpected mapping inside list near: {ln}")
-            if rest == "":
-                container[key] = {}
-                stack.append((indent + 2, container[key]))
-                current_key_stack.append(key)
-            else:
-                container[key] = parse_value(rest)
-                current_key_stack[-1] = key
-            continue
-
-        raise ValueError(f"Unparseable line: {ln}")
-
-    return root
+# Import shared utilities
+from lil_os_utils import Finding, load_simple_yaml, read_text, normalize_yaml_list
 
 # ----------------------------
 # Reporting
 # ----------------------------
-@dataclass
-class Finding:
-    level: str  # HARD_FAIL | WARN | INFO
-    code: str
-    message: str
-    details: Optional[dict] = None
-
 def print_findings(findings: List[Finding]) -> int:
     hard = [f for f in findings if f.level == "HARD_FAIL"]
     warn = [f for f in findings if f.level == "WARN"]
@@ -108,14 +39,6 @@ def print_findings(findings: List[Finding]) -> int:
 
     print("\nSummary:", f"{len(hard)} hard fail(s), {len(warn)} warning(s), {len(findings)} total finding(s).")
     return 1 if hard else 0
-
-# ----------------------------
-# Helpers
-# ----------------------------
-def read_text(path: Path) -> str:
-    if not path.exists():
-        return ""
-    return path.read_text(encoding="utf-8", errors="replace")
 
 def git_available() -> bool:
     try:
@@ -645,6 +568,332 @@ def check_explanation_failure_marker() -> List[Finding]:
                         {"marker": str(marker)})]
     return [Finding("INFO", "LEGIT_EXPLANATION_OK", "No explanation failure marker present.")]
 
+def check_automation_creep(
+    decision_log: Path,
+    context_budget: Path,
+    automation_keywords: List[str],
+    forbidden_domains: List[str],
+    enabled: bool
+) -> List[Finding]:
+    """Check if automation is expanding into human-judgment domains."""
+    findings: List[Finding] = []
+    if not enabled:
+        return [Finding("INFO", "LOAD_AUTOMATION_CREEP_DISABLED", "Automation creep detection is disabled.")]
+    
+    if not decision_log.exists():
+        return [Finding("INFO", "LOAD_AUTOMATION_CREEP_NO_DECISION_LOG", "Decision log not found; skipping automation creep check.")]
+    
+    # Parse CONTEXT_BUDGET.md to extract forbidden domains from "Automation Budget" section
+    # Normalize forbidden_domains to ensure it's a list
+    forbidden_domains = normalize_yaml_list(forbidden_domains)
+    extracted_forbidden_domains = forbidden_domains.copy()  # Start with YAML config as fallback
+    if context_budget.exists():
+        context_budget_text = read_text(context_budget)
+        # Look for "Automation Budget" section
+        automation_budget_match = re.search(r'### Automation Budget\s*\n(.*?)(?=\n###|\n##|$)', context_budget_text, re.DOTALL | re.IGNORECASE)
+        if automation_budget_match:
+            automation_section = automation_budget_match.group(1)
+            # Extract forbidden domains from bullet points under "Forbidden by default:"
+            forbidden_match = re.search(r'Forbidden by default:\s*\n((?:- .+\n?)+)', automation_section, re.IGNORECASE)
+            if forbidden_match:
+                forbidden_lines = forbidden_match.group(1)
+                # Extract each bullet point and map to YAML config format
+                extracted = []
+                for line in forbidden_lines.split('\n'):
+                    line = line.strip()
+                    if line.startswith('- '):
+                        domain = line[2:].strip().lower()
+                        # Map CONTEXT_BUDGET.md phrases to YAML config keywords
+                        if 'value judgment' in domain:
+                            extracted.extend(['value judgment', 'moral', 'ethics', 'ethical'])
+                        elif 'moral' in domain or 'tradeoff' in domain:
+                            extracted.extend(['moral', 'ethics', 'ethical'])
+                        elif 'irreversible harm' in domain:
+                            extracted.extend(['irreversible harm', 'permanent damage'])
+                        elif 'audit trail' in domain or 'without audit' in domain or 'no audit' in domain:
+                            extracted.extend(['without audit', 'no audit trail', 'no logging'])
+                        else:
+                            # Extract key words from the domain description
+                            words = domain.split()
+                            if words:
+                                # Add first significant word
+                                extracted.append(words[0])
+                
+                if extracted:
+                    # Merge with YAML config, removing duplicates while preserving order
+                    # YAML config takes precedence for exact matches
+                    all_domains = forbidden_domains + [d for d in extracted if d not in forbidden_domains]
+                    extracted_forbidden_domains = list(dict.fromkeys(all_domains))  # Remove duplicates, preserve order
+    
+    # Use extracted domains (from CONTEXT_BUDGET.md if found, otherwise YAML config)
+    forbidden_domains_to_use = extracted_forbidden_domains
+    
+    # Parse decision log entries
+    decision_log_text = read_text(decision_log)
+    entries = parse_decision_log_entries(decision_log_text)
+    
+    if not entries:
+        return [Finding("INFO", "LOAD_AUTOMATION_CREEP_NO_ENTRIES", "No decision log entries found; skipping automation creep check.")]
+    
+    # Check each entry for automation keywords and forbidden domains
+    violations = []
+    for idx, entry in enumerate(entries, start=1):
+        entry_lower = entry.lower()
+        
+        # Check if entry contains automation keywords
+        has_automation = False
+        automation_found = []
+        for keyword in automation_keywords:
+            if keyword.lower() in entry_lower:
+                has_automation = True
+                automation_found.append(keyword)
+        
+        if not has_automation:
+            continue
+        
+        # Check if entry also contains forbidden domain keywords
+        has_forbidden_domain = False
+        forbidden_found = []
+        for domain in forbidden_domains_to_use:
+            if domain.lower() in entry_lower:
+                has_forbidden_domain = True
+                forbidden_found.append(domain)
+        
+        if has_forbidden_domain:
+            # Extract relevant portion of entry for context
+            entry_preview = entry[:500] if len(entry) > 500 else entry
+            violations.append({
+                "entry_index": idx,
+                "automation_keywords": automation_found,
+                "forbidden_domains": forbidden_found,
+                "entry_preview": entry_preview
+            })
+    
+    if violations:
+        findings.append(Finding(
+            "HARD_FAIL",
+            "LOAD_AUTOMATION_CREEP_VIOLATION",
+            f"Automation creep detected: {len(violations)} decision log entry(ies) automate forbidden human-judgment domains.",
+            {
+                "violations": violations[:20],  # Limit to first 20 for readability
+                "count": len(violations),
+                "note": "Automation must not expand into value judgments, moral tradeoffs, irreversible harm, or actions without audit trail per CONTEXT_BUDGET.md"
+            }
+        ))
+    else:
+        findings.append(Finding("INFO", "LOAD_AUTOMATION_CREEP_OK", "No automation creep violations detected."))
+    
+    return findings
+
+# ----------------------------
+# Rule Contradiction Detection Helpers
+# ----------------------------
+
+@dataclass
+class Rule:
+    """Represents a parsed rule."""
+    rule_id: str
+    text: str
+    file_path: Path
+    line_number: int
+    normative_keyword: str
+
+def extract_rules_from_files(rule_files: List[Path]) -> List[Rule]:
+    """Extract all rules from governance files."""
+    rules = []
+    # Rule ID pattern from lil_os.rule_id.yaml
+    rule_id_pattern = re.compile(r'\[LIL-(MR|GOV|CB|RT|WF|QL|SEC|DATA|API|PERF|CR)-(BOUNDARY|AUTH|PROCESS|SAFETY|SCOPE|FORMAT|BUDGET|LOG|RESET)-\d{4}\]')
+    normative_keywords = ["MUST NOT", "MUST", "SHOULD NOT", "SHOULD", "MAY"]
+    
+    for rule_file in rule_files:
+        if not rule_file.exists():
+            continue
+        
+        text = read_text(rule_file)
+        for line_num, line in enumerate(text.splitlines(), start=1):
+            # Find rule ID in line
+            rule_id_match = rule_id_pattern.search(line)
+            if not rule_id_match:
+                continue
+            
+            rule_id = rule_id_match.group(0)
+            
+            # Find normative keyword
+            normative_keyword = None
+            for keyword in normative_keywords:
+                if keyword in line.upper():
+                    normative_keyword = keyword
+                    break
+            
+            if normative_keyword:
+                rules.append(Rule(
+                    rule_id=rule_id,
+                    text=line.strip(),
+                    file_path=rule_file,
+                    line_number=line_num,
+                    normative_keyword=normative_keyword
+                ))
+    
+    return rules
+
+def extract_rule_subject(rule: Rule) -> str:
+    """Extract the subject of a rule (what the rule is about)."""
+    # Remove rule ID
+    text = rule.text
+    text = re.sub(r'\[LIL-[^\]]+\]', '', text)
+    
+    # Remove normative keywords
+    for keyword in ["MUST NOT", "MUST", "SHOULD NOT", "SHOULD", "MAY"]:
+        text = text.replace(keyword, '')
+    
+    # Normalize: lowercase, remove extra spaces, remove leading/trailing punctuation
+    text = re.sub(r'\s+', ' ', text).strip().lower()
+    text = text.strip('.,;:')
+    
+    return text
+
+def normalize_subject(subject: str) -> str:
+    """Normalize rule subjects for comparison."""
+    # Remove common words that don't affect meaning
+    stop_words = {'the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'should', 'could', 'may', 'might', 'must', 'can', 'cannot'}
+    
+    words = subject.split()
+    filtered_words = [w for w in words if w not in stop_words]
+    
+    # Join and normalize
+    normalized = ' '.join(filtered_words)
+    normalized = re.sub(r'[^\w\s]', '', normalized)  # Remove punctuation
+    normalized = re.sub(r'\s+', ' ', normalized).strip()
+    
+    return normalized
+
+def check_rule_contradiction(rule_files: List[Path], enabled: bool, use_enhanced: bool = False) -> List[Finding]:
+    """Check for contradictory rules across governance files."""
+    findings: List[Finding] = []
+    if not enabled:
+        return [Finding("INFO", "DRIFT_RULE_CONTRADICTION_DISABLED", "Rule contradiction detection is disabled.")]
+    
+    if use_enhanced:
+        # Enhanced detection not yet implemented - see IMPLEMENTATION_DIFFICULTY_ASSESSMENT.md
+        return check_rule_contradiction_enhanced(rule_files)
+    
+    # Extract all rules
+    rules = extract_rules_from_files(rule_files)
+    
+    if len(rules) < 2:
+        return [Finding("INFO", "DRIFT_RULE_CONTRADICTION_OK", "Not enough rules to check for contradictions (need at least 2).")]
+    
+    # Extract subjects and normalize
+    rule_subjects = {}
+    for rule in rules:
+        subject = extract_rule_subject(rule)
+        normalized = normalize_subject(subject)
+        
+        if normalized not in rule_subjects:
+            rule_subjects[normalized] = []
+        rule_subjects[normalized].append(rule)
+    
+    # Check for contradictions
+    contradictions = []
+    
+    # Check for direct contradictions (same normalized subject, conflicting normative keywords)
+    for normalized_subject, subject_rules in rule_subjects.items():
+        if len(subject_rules) < 2:
+            continue
+        
+        # Check for MUST NOT vs MUST
+        has_must_not = any(r.normative_keyword == "MUST NOT" for r in subject_rules)
+        has_must = any(r.normative_keyword == "MUST" for r in subject_rules)
+        
+        if has_must_not and has_must:
+            must_not_rules = [r for r in subject_rules if r.normative_keyword == "MUST NOT"]
+            must_rules = [r for r in subject_rules if r.normative_keyword == "MUST"]
+            
+            contradictions.append({
+                "type": "HARD_CONTRADICTION",
+                "subject": normalized_subject,
+                "conflict": "MUST NOT vs MUST",
+                "must_not_rules": [{"id": r.rule_id, "file": str(r.file_path), "line": r.line_number} for r in must_not_rules],
+                "must_rules": [{"id": r.rule_id, "file": str(r.file_path), "line": r.line_number} for r in must_rules]
+            })
+        
+        # Check for SHOULD NOT vs SHOULD (weaker contradiction)
+        has_should_not = any(r.normative_keyword == "SHOULD NOT" for r in subject_rules)
+        has_should = any(r.normative_keyword == "SHOULD" for r in subject_rules)
+        
+        if has_should_not and has_should:
+            should_not_rules = [r for r in subject_rules if r.normative_keyword == "SHOULD NOT"]
+            should_rules = [r for r in subject_rules if r.normative_keyword == "SHOULD"]
+            
+            contradictions.append({
+                "type": "SOFT_CONTRADICTION",
+                "subject": normalized_subject,
+                "conflict": "SHOULD NOT vs SHOULD",
+                "should_not_rules": [{"id": r.rule_id, "file": str(r.file_path), "line": r.line_number} for r in should_not_rules],
+                "should_rules": [{"id": r.rule_id, "file": str(r.file_path), "line": r.line_number} for r in should_rules]
+            })
+    
+    # Check for explicit contradiction markers
+    for rule in rules:
+        # Look for patterns like "contradicts [LIL-XXX-YYY-0001]"
+        contradiction_pattern = re.compile(r'contradicts\s+(\[LIL-[^\]]+\])', re.IGNORECASE)
+        match = contradiction_pattern.search(rule.text)
+        if match:
+            referenced_id = match.group(1)
+            # Check if referenced rule exists
+            referenced_rule = next((r for r in rules if r.rule_id == referenced_id), None)
+            if referenced_rule:
+                contradictions.append({
+                    "type": "EXPLICIT_CONTRADICTION",
+                    "rule_id": rule.rule_id,
+                    "contradicts": referenced_id,
+                    "rule_file": str(rule.file_path),
+                    "rule_line": rule.line_number,
+                    "referenced_file": str(referenced_rule.file_path),
+                    "referenced_line": referenced_rule.line_number
+                })
+    
+    if contradictions:
+        hard_contradictions = [c for c in contradictions if c["type"] == "HARD_CONTRADICTION" or c["type"] == "EXPLICIT_CONTRADICTION"]
+        soft_contradictions = [c for c in contradictions if c["type"] == "SOFT_CONTRADICTION"]
+        
+        if hard_contradictions:
+            findings.append(Finding(
+                "HARD_FAIL",
+                "DRIFT_RULE_CONTRADICTION",
+                f"Rule contradiction detected: {len(hard_contradictions)} hard contradiction(s) found.",
+                {
+                    "contradictions": hard_contradictions[:20],  # Limit to first 20
+                    "count": len(hard_contradictions),
+                    "note": "Rules with conflicting requirements detected. Review and resolve contradictions."
+                }
+            ))
+        
+        if soft_contradictions:
+            findings.append(Finding(
+                "WARN",
+                "DRIFT_RULE_CONTRADICTION_SOFT",
+                f"Soft rule contradiction detected: {len(soft_contradictions)} contradiction(s) found (SHOULD NOT vs SHOULD).",
+                {
+                    "contradictions": soft_contradictions[:20],
+                    "count": len(soft_contradictions)
+                }
+            ))
+    else:
+        findings.append(Finding("INFO", "DRIFT_RULE_CONTRADICTION_OK", "No rule contradictions detected."))
+    
+    return findings
+
+def check_rule_contradiction_enhanced(rule_files: List[Path]) -> List[Finding]:
+    """
+    Enhanced rule contradiction detection using semantic analysis.
+    
+    NOT YET IMPLEMENTED - See docs/IMPLEMENTATION_DIFFICULTY_ASSESSMENT.md for details.
+    This would require NLP library for semantic analysis to detect subtle contradictions.
+    """
+    return [Finding("INFO", "DRIFT_RULE_CONTRADICTION_ENHANCED_NOT_IMPLEMENTED", 
+                    "Enhanced contradiction detection not yet implemented. Using basic pattern-based detection instead. See docs/IMPLEMENTATION_DIFFICULTY_ASSESSMENT.md for details.")]
+
 def main() -> int:
     cfg_path = Path("lil_os.reset_checks.yaml")
     if not cfg_path.exists():
@@ -667,6 +916,11 @@ def main() -> int:
 
     findings: List[Finding] = []
     findings += check_rule_accretion_velocity(int(windows.get("rule_velocity_days", 30)))
+    findings += check_rule_contradiction(
+        rule_files=[master_rules, governance, context_budget, cursor_rules],
+        enabled=bool(cfg.get("checks", {}).get("check_rule_contradiction", True)),
+        use_enhanced=bool(cfg.get("checks", {}).get("use_enhanced_contradiction_detection", False))
+    )
     findings += check_justification_decay(
         decision_log=decision_log,
         required_fields=conventions.get("decision_log_required_fields", []),
@@ -684,6 +938,17 @@ def main() -> int:
     findings += check_silent_memory_growth(
         memory_dir=memory_dir,
         required_meta=conventions.get("memory_required_metadata", []),
+    )
+    # Extract lists from conventions (normalize YAML parser output)
+    automation_keywords = normalize_yaml_list(conventions.get("automation_keywords", []))
+    forbidden_domains = normalize_yaml_list(conventions.get("forbidden_domains", []))
+    
+    findings += check_automation_creep(
+        decision_log=decision_log,
+        context_budget=context_budget,
+        automation_keywords=automation_keywords,
+        forbidden_domains=forbidden_domains,
+        enabled=bool(cfg.get("checks", {}).get("check_automation_creep", True))
     )
     findings += check_override_normalization(
         decision_log=decision_log,

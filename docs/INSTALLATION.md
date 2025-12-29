@@ -1,8 +1,6 @@
-# Installation
-
 ## Getting Started (Using Terminal Commands) 
 
-**Manual installation instructions are provided inline with Liberatory Intelligence principles** — we believe in empowering developers with the knowledge and skills to work autonomously in their development environments. These step-by-step terminal instructions help you learn fundamental skills while setting up LIL OS.
+**Manual installation instructions are provided inline with Liberatory Intelligence principles.** We believe in empowering developers with the knowledge and skills to work autonomously in their development environments. These step-by-step terminal instructions help you learn fundamental skills while setting up LIL OS.
 
 **Not quite ready to do things manually yet, or want to get a feel for working within GitHub?** We understand! Read the [User Guide](USER_GUIDE.md) which includes chat prompts you can use with your AI assistant to get guided help through the setup process.
 
@@ -142,10 +140,10 @@ The wizard will ask you a few questions about pre-commit hooks and validation. T
 
 ---
 
-### What's Next?
+## What's Next?
 
 After the setup wizard completes:
-1. If you haven't already, read `USER_GUIDE.md` - This beginner-friendly guide explains day-to-day usage and when to log decisions
+1. If you haven't already, read `docs/USER_GUIDE.md` - A beginner-friendly guide to LIL OS
 2. Start using LIL OS in your project - Most of the time, you can code normally!
 3. When you make an important decision, log it in `docs/DECISION_LOG.md`
 

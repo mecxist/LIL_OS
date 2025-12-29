@@ -14,80 +14,11 @@ from __future__ import annotations
 import re
 import sys
 import json
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Tuple, Set, Optional
 
-def load_simple_yaml(path: Path) -> dict:
-    text = path.read_text(encoding="utf-8")
-    lines = [ln.rstrip("\n") for ln in text.splitlines() if ln.strip() and not ln.strip().startswith("#")]
-    root: dict = {}
-    stack: List[Tuple[int, dict | list]] = [(0, root)]
-    current_key_stack: List[Optional[str]] = [None]
-
-    def parse_value(v: str):
-        v = v.strip()
-        if v.isdigit():
-            return int(v)
-        if (v.startswith('"') and v.endswith('"')) or (v.startswith("'") and v.endswith("'")):
-            result = v[1:-1]
-            # Handle escape sequences for double-quoted strings (YAML-style)
-            if v.startswith('"'):
-                # Unescape common regex patterns
-                result = result.replace('\\[', '[').replace('\\]', ']')
-                result = result.replace('\\d', r'\d')
-                result = result.replace('\\\\', '\\')
-            return result
-        return v
-
-    for ln in lines:
-        indent = len(ln) - len(ln.lstrip(" "))
-        ln = ln.lstrip(" ")
-        while stack and indent < stack[-1][0]:
-            stack.pop()
-            current_key_stack.pop()
-
-        container = stack[-1][1]
-
-        if ln.startswith("- "):
-            item = parse_value(ln[2:])
-            if not isinstance(container, list):
-                key = current_key_stack[-1]
-                if key is None or not isinstance(container, dict):
-                    raise ValueError(f"List item without list context near: {ln}")
-                if key not in container or not isinstance(container[key], list):
-                    container[key] = []
-                container = container[key]
-                stack.append((indent, container))
-                current_key_stack.append(key)
-            container.append(item)
-            continue
-
-        if ":" in ln:
-            key, rest = ln.split(":", 1)
-            key = key.strip()
-            rest = rest.strip()
-            if isinstance(container, list):
-                raise ValueError(f"Unexpected mapping inside list near: {ln}")
-            if rest == "":
-                container[key] = {}
-                stack.append((indent + 2, container[key]))
-                current_key_stack.append(key)
-            else:
-                container[key] = parse_value(rest)
-                current_key_stack[-1] = key
-            continue
-
-        raise ValueError(f"Unparseable line: {ln}")
-
-    return root
-
-@dataclass
-class Finding:
-    level: str
-    code: str
-    message: str
-    details: dict | None = None
+# Import shared utilities
+from lil_os_utils import Finding, load_simple_yaml, read_text
 
 def emit(findings: List[Finding]) -> int:
     hard = [f for f in findings if f.level == "HARD_FAIL"]
@@ -112,9 +43,6 @@ def iter_sources(scan_paths: List[str]) -> List[Path]:
         else:
             continue
     return out
-
-def read_text(p: Path) -> str:
-    return p.read_text(encoding="utf-8", errors="replace")
 
 def normalize_rule_text(line: str, rule_id: str) -> str:
     s = line.replace(rule_id, "")

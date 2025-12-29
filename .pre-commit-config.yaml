@@ -1,6 +1,13 @@
 repos:
   - repo: local
     hooks:
+      - id: lil-os-critical-change-warning
+        name: LIL OS Critical Change Warning
+        entry: python3 scripts/lil_os_critical_change_warning.py --pre-commit
+        language: system
+        pass_filenames: false
+        always_run: true
+        verbose: true
       - id: lil-os-rule-id-lint
         name: LIL OS Rule ID Lint
         entry: python3 scripts/lil_os_rule_id_lint.py
