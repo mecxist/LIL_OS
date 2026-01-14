@@ -265,6 +265,72 @@ Before making intent-level changes:
 - `.github/PERMISSIONS.md` - Access control and branch protection
 - `MASTER_RULES.md` - Non-negotiable security boundaries
 
+## ML Module Security
+
+LIL OS² includes optional ML modules that process git history and validation reports. These modules have specific security considerations:
+
+### Signal Collection Security
+
+**Risk:** ML modules collect signals from git commits and validation reports, which may contain sensitive information.
+
+**Mitigation:**
+- Signal collection redacts sensitive strings using patterns from `lil_os.reset_checks.yaml`
+- Secrets are replaced with `[REDACTED]` in signal storage
+- Signal storage (`.lil_os/ml/`) is excluded from git by default
+- SQLite database is local-only and not synced to version control
+
+**Best Practice:**
+- Review signal collection patterns regularly
+- Never commit `.lil_os/ml/` directory to git
+- Use ML modules only in trusted environments
+- Disable ML modules if signal collection is a concern
+
+### Model Artifact Security
+
+**Risk:** Trained models may contain information from training data.
+
+**Mitigation:**
+- Models are stored locally in `.lil_os/ml/models/`
+- Model artifacts are excluded from git
+- Model metadata includes provenance information
+- Models can be versioned and validated
+
+**Best Practice:**
+- Never commit model artifacts to git
+- Validate model checksums before loading
+- Review model metadata for training data sources
+- Retrain models if training data contained sensitive information
+
+### ML Module Configuration
+
+ML modules are **opt-in** and disabled by default. To use ML modules:
+
+1. Install with ML extras: `pip install lil-os[ml]`
+2. Enable modules explicitly in `lil_os.ml.yaml`
+3. Review configuration before enabling
+
+**Default Configuration:**
+- All ML modules are disabled by default
+- Signal collection requires explicit enablement
+- Model training is manual (not automatic)
+
+### Secret Redaction in Signals
+
+ML signal collectors automatically redact:
+- API keys and tokens
+- Passwords and credentials
+- OAuth secrets
+- Database connection strings
+
+Redaction uses the same patterns as secret detection in validation scripts.
+
+**If sensitive data is detected in signals:**
+1. Review signal collection configuration
+2. Update redaction patterns if needed
+3. Clear signal storage if necessary
+4. Retrain models if they were trained on sensitive data
+
 ## Version History
 
 - **v0.1.1** - Initial security documentation with integrity checks, CI/CD enforcement, secret detection, and script checksum verification
+- **v2.0.0** - Added ML module security considerations and signal collection redaction

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-LIL OS Critical Change Warning System
+LIL OS² Critical Change Warning System
 
 Provides non-blocking warnings to inexperienced developers when they're about to make
 important or critical changes. Designed to catch issues before commits, especially
@@ -28,7 +28,7 @@ from datetime import datetime
 sys.path.insert(0, str(Path(__file__).parent))
 
 # Import shared utilities
-from lil_os_utils import Colors
+from lil_os_utils import Colors, Finding, Timer, print_startup_banner, print_success_message, print_os_message
 
 def git_available() -> bool:
     """Check if git is available."""
@@ -202,46 +202,70 @@ def print_warnings(warnings: List[str], is_pre_commit: bool = False):
     """Print all warnings in a user-friendly format."""
     if not warnings:
         if not is_pre_commit:
-            print(f"{Colors.BRIGHT_GREEN}✅ No critical change warnings{Colors.RESET}")
+            print_os_message("No critical change warnings", "SUCCESS")
         return
     
-    print(f"\n{Colors.BRIGHT_CYAN}{'='*70}{Colors.RESET}")
-    print(f"{Colors.BOLD}  LIL OS Critical Change Warnings{Colors.RESET}")
-    print(f"{Colors.BRIGHT_CYAN}{'='*70}{Colors.RESET}\n")
-    
+    # Use OS-like box for warnings
+    from lil_os_utils import print_os_box
+    content = []
     for warning in warnings:
-        print(warning)
-        print()
+        # Extract text from warning (remove color codes for box)
+        warning_text = warning.replace(Colors.BRIGHT_YELLOW, "").replace(Colors.BRIGHT_RED, "")
+        warning_text = warning_text.replace(Colors.YELLOW, "").replace(Colors.CYAN, "")
+        warning_text = warning_text.replace(Colors.DIM, "").replace(Colors.RESET, "")
+        warning_text = warning_text.replace(Colors.BOLD, "")
+        # Split into lines and add to content
+        for line in warning_text.split("\n"):
+            if line.strip():
+                content.append(line.strip())
+        content.append("")
     
-    print(f"{Colors.BRIGHT_CYAN}{'='*70}{Colors.RESET}")
-    print(f"{Colors.DIM}Note: These are warnings, not errors. Your commit will proceed.{Colors.RESET}")
-    print(f"{Colors.DIM}However, please review these warnings carefully before committing.{Colors.RESET}")
-    print(f"{Colors.BRIGHT_CYAN}{'='*70}{Colors.RESET}\n")
+    print_os_box("Critical Change Warnings", content, width=70)
+    print_os_message("Note: These are warnings, not errors. Your commit will proceed.", "INFO")
+    print_os_message("However, please review these warnings carefully before committing.", "INFO")
+    print()
 
 def main() -> int:
     """Main function."""
+    timer = Timer()
+    check_name = "Critical Change Warning"
+    
     # Check if we're in a git repository
     if not git_available():
-        print(f"{Colors.YELLOW}⚠️  Git not available. Skipping critical change warnings.{Colors.RESET}")
+        print_os_message("Git not available. Skipping critical change warnings.", "WARN")
         return 0
     
     # Determine if this is a pre-commit hook or manual run
     is_pre_commit = "--pre-commit" in sys.argv
     
-    # Get files to check
+    # Simple config (could add config file later)
+    show_banner = True  # Always show for warnings
+    show_success = True
+    
+    # Enhanced OS-like branding for pre-commit
     if is_pre_commit:
-        files = get_staged_files()
+        print_os_message("=" * 70, "INFO")
+        print_os_message("LIL OS² Pre-Commit Validation", "INFO")
+        print_os_message("=" * 70, "INFO")
+        print()
     else:
-        files = get_modified_files()
-        if not files:
-            # Check staged files as fallback
+        print_startup_banner(check_name, show_banner)
+    
+    with timer:
+        # Get files to check
+        if is_pre_commit:
             files = get_staged_files()
-    
-    if not files:
-        if not is_pre_commit:
-            print(f"{Colors.DIM}No modified files to check.{Colors.RESET}")
-        return 0
-    
+        else:
+            files = get_modified_files()
+            if not files:
+                # Check staged files as fallback
+                files = get_staged_files()
+        
+        if not files:
+            if not is_pre_commit:
+                print_os_message("No modified files to check.", "INFO")
+            return 0
+        
     # Collect all warnings
     warnings = []
     warnings.extend(check_governance_file_changes(files))
@@ -251,6 +275,39 @@ def main() -> int:
     
     # Print warnings
     print_warnings(warnings, is_pre_commit)
+    
+    # Interactive recovery for pre-commit
+    if is_pre_commit and warnings:
+        governance_warnings = [w for w in warnings if "governance files" in w.lower() or "decision log" in w.lower()]
+        if governance_warnings:
+            print_os_message("Would you like to create a decision log entry now? [y/N]: ", "INFO")
+            try:
+                response = input().strip().lower()
+                if response == 'y':
+                    print_os_message("Launching interactive decision log...", "INFO")
+                    print()
+                    # Import and run decision prompt
+                    sys.path.insert(0, str(Path(__file__).parent.parent / "lil_os"))
+                    try:
+                        from lil_os import decision_prompt
+                        decision_prompt.main()
+                    except ImportError:
+                        print_os_message("Could not launch interactive mode. Run 'lil-os log-decision' manually.", "WARN")
+            except (EOFError, KeyboardInterrupt):
+                print_os_message("Skipping interactive decision log.", "INFO")
+    
+    # Print timing
+    if timer.elapsed > 0:
+        print(f"{Colors.DIM}⏱️  Completed in {timer.format_elapsed()}{Colors.RESET}")
+    
+    # Create findings list for success message
+    findings = []
+    if warnings:
+        for warning in warnings:
+            # Extract level from warning text if possible, default to WARN
+            findings.append(Finding("WARN", "CRITICAL_CHANGE", warning))
+    
+    print_success_message(check_name, findings, timer, show_success)
     
     # Return 0 (success) even with warnings - we're warning, not blocking
     return 0

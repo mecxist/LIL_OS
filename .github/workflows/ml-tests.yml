@@ -1,0 +1,48 @@
+name: ML Module Tests
+
+on: [push, pull_request]
+
+jobs:
+  test-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - run: pip install pytest
+      - run: pip install -e .
+      - run: python -m pytest tests/ -v -k "not ml"
+
+  test-ml:
+    runs-on: ubuntu-latest
+    needs: test-core
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - run: pip install pytest
+      - run: pip install -e ".[ml]"
+      - run: python -m pytest tests/ -v -k "ml or signals"
+      - run: lil-os ml status || true
+      - name: Upload ML report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: ml-status
+          path: |
+            .lil_os/ml/
+            lil_os.ml.yaml
+          if-no-files-found: ignore
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - run: pip install -e .
+      - run: lil-os lint || true
+      - run: lil-os check || true

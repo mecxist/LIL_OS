@@ -1,0 +1,26 @@
+# LIL OS Daemon Configuration
+
+# Daemon settings
+daemon:
+  enabled: true
+  watch_interval: 2.0
+  event_history_size: 1000
+
+# Monitoring configuration
+monitoring:
+  # File system watcher
+  file_watcher:
+    enabled: true
+    watch_paths:
+      - docs/
+      - .cursorrules
+  
+  # Git monitor
+  git_monitor:
+    enabled: true
+    detect_ai_agents: true
+  
+  # Validation monitor
+  validation_monitor:
+    enabled: true
+

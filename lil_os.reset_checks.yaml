@@ -110,3 +110,12 @@ security:
     # To calculate: python3 -c "import hashlib; print(hashlib.sha256(open('scripts/FILENAME','rb').read()).hexdigest())"
     lil_os_rule_id_lint.py: "d6d34849d33b366a40a923f793f25693866c905a55f1c9dc061cdec28e7c4a35"
     lil_os_reset_checks.py: "4af39f26137b05d6aef5309963f315d08ca47057c530341ff757aa4c5aed46ae"
+
+reporting:
+  generate_reports: false  # Set to true to enable report generation
+  report_format: ["json", "markdown"]  # Options: json, markdown, or both
+  report_location: ".lil_os/reports"
+  keep_reports_days: 30  # Auto-cleanup old reports (future feature)
+  show_startup_banner: true
+  show_success_message: true
+  show_timing: true

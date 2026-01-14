@@ -4,6 +4,12 @@ scan_paths:
   - "docs"
   - ".cursorrules"
 
+# Files to exclude from scanning (examples, assessments, guides with rule references)
+exclude_paths:
+  - "docs/IMPLEMENTATION_DIFFICULTY_ASSESSMENT.md"
+  - "docs/ML_USER_GUIDE.md"
+  - "docs/RULE_IDS.md"
+
 rule_id:
   pattern: "\\[LIL-(MR|GOV|CB|RT|WF|QL|SEC|DATA|API|PERF|CR)-(BOUNDARY|AUTH|PROCESS|SAFETY|SCOPE|FORMAT|BUDGET|LOG|RESET)-\\d{4}\\]"
   require_normative_keyword: true
@@ -20,3 +26,11 @@ checks:
   duplicate_rule_text: true
 
 strict_sequences: false
+
+reporting:
+  generate_reports: false
+  report_format: ["json", "markdown"]
+  report_location: ".lil_os/reports"
+  show_startup_banner: true
+  show_success_message: true
+  show_timing: true

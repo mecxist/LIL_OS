@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-LIL OS Reset Triggers — Executable Checks (v1)
+LIL OS² Reset Triggers — Executable Checks (v1)
 
 Runs checks corresponding to docs/RESET_TRIGGERS.md and exits non-zero on HARD failures.
 Designed for CI, pre-commit, or agent tool execution.
@@ -22,8 +22,23 @@ from typing import List, Tuple, Optional
 # Add scripts directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
+# Add lil_os to path for event system
+lil_os_dir = Path(__file__).parent.parent / "lil_os"
+sys.path.insert(0, str(lil_os_dir.parent))
+
 # Import shared utilities
-from lil_os_utils import Finding, load_simple_yaml, read_text, normalize_yaml_list
+from lil_os_utils import (
+    Finding, load_simple_yaml, read_text, normalize_yaml_list, Colors,
+    Timer, print_startup_banner, print_success_message, generate_report, save_report,
+    print_os_error, format_os_finding
+)
+
+# Import event system (optional - won't break if not available)
+try:
+    from lil_os.events import Event, EventType, EventSeverity, get_event_bus
+    EVENTS_AVAILABLE = True
+except ImportError:
+    EVENTS_AVAILABLE = False
 
 # ----------------------------
 # Reporting
@@ -32,15 +47,23 @@ def print_findings(findings: List[Finding]) -> int:
     hard = [f for f in findings if f.level == "HARD_FAIL"]
     warn = [f for f in findings if f.level == "WARN"]
 
-    def emit(f: Finding):
-        print(f"[{f.level}] {f.code}: {f.message}")
-        if f.details:
-            print("  details:", json.dumps(f.details, indent=2))
-
+    # Print all findings with OS-like formatting
     for f in findings:
-        emit(f)
+        if f.level == "HARD_FAIL":
+            print_os_error(f, include_actions=True)
+        else:
+            print(format_os_finding(f))
+            print()
 
-    print("\nSummary:", f"{len(hard)} hard fail(s), {len(warn)} warning(s), {len(findings)} total finding(s).")
+    # Summary with OS-like formatting
+    from lil_os_utils import print_os_message
+    if hard:
+        print_os_message(f"Summary: {len(hard)} hard fail(s), {len(warn)} warning(s), {len(findings)} total finding(s).", "ERROR")
+    elif warn:
+        print_os_message(f"Summary: {len(warn)} warning(s), {len(findings)} total finding(s).", "WARN")
+    else:
+        print_os_message(f"Summary: {len(findings)} finding(s).", "INFO")
+    
     return 1 if hard else 0
 
 def git_available() -> bool:
@@ -898,12 +921,25 @@ def check_rule_contradiction_enhanced(rule_files: List[Path]) -> List[Finding]:
                     "Enhanced contradiction detection not yet implemented. Using basic pattern-based detection instead. See docs/IMPLEMENTATION_DIFFICULTY_ASSESSMENT.md for details.")]
 
 def main() -> int:
+    timer = Timer()
+    check_name = "Reset Checks"
+    
     cfg_path = Path("lil_os.reset_checks.yaml")
     if not cfg_path.exists():
         print("[HARD_FAIL] CONFIG_MISSING: lil_os.reset_checks.yaml not found.")
         return 1
 
     cfg = load_simple_yaml(cfg_path)
+    
+    # Get reporting config early
+    reporting_config = cfg.get("reporting", {})
+    show_banner = reporting_config.get("show_startup_banner", True)
+    show_success = reporting_config.get("show_success_message", True)
+    show_timing = reporting_config.get("show_timing", True)
+    
+    # Print startup banner
+    print_startup_banner(check_name, show_banner)
+    
     paths = cfg.get("paths", {})
     windows = cfg.get("windows", {})
     thresholds = cfg.get("thresholds", {})
@@ -918,90 +954,138 @@ def main() -> int:
     memory_dir = Path(paths.get("memory_dir", "memory"))
 
     findings: List[Finding] = []
-    findings += check_rule_accretion_velocity(int(windows.get("rule_velocity_days", 30)))
-    findings += check_rule_contradiction(
-        rule_files=[master_rules, governance, context_budget, cursor_rules],
-        enabled=bool(cfg.get("checks", {}).get("check_rule_contradiction", True)),
-        use_enhanced=bool(cfg.get("checks", {}).get("use_enhanced_contradiction_detection", False))
-    )
-    findings += check_justification_decay(
-        decision_log=decision_log,
-        required_fields=conventions.get("decision_log_required_fields", []),
-        incomplete_threshold=int(thresholds.get("justification_decay_incomplete_entries", 2)),
-        rolling_entries=int(windows.get("decision_log_rolling_entries", 20)),
-    )
-    findings += check_context_budget_overflow(
-        rule_files=[master_rules, governance, context_budget, cursor_rules],
-        agents_dir=agents_dir,
-        memory_dir=memory_dir,
-        max_rules=int(thresholds.get("max_rules", 120)),
-        max_agents=int(thresholds.get("max_agents", 8)),
-        max_memory=int(thresholds.get("max_memory_artifacts", 200)),
-    )
-    findings += check_silent_memory_growth(
-        memory_dir=memory_dir,
-        required_meta=conventions.get("memory_required_metadata", []),
-    )
-    # Extract lists from conventions (normalize YAML parser output)
-    automation_keywords = normalize_yaml_list(conventions.get("automation_keywords", []))
-    forbidden_domains = normalize_yaml_list(conventions.get("forbidden_domains", []))
     
-    findings += check_automation_creep(
-        decision_log=decision_log,
-        context_budget=context_budget,
-        automation_keywords=automation_keywords,
-        forbidden_domains=forbidden_domains,
-        enabled=bool(cfg.get("checks", {}).get("check_automation_creep", True))
-    )
-    findings += check_override_normalization(
-        decision_log=decision_log,
-        override_markers=conventions.get("override_markers", []),
-        per_window_threshold=int(thresholds.get("override_normalization_per_window", 2)),
-    )
-    findings += check_metric_dominance(
-        decision_log=decision_log,
-        metric_markers=conventions.get("metric_markers", []),
-        consecutive_threshold=int(thresholds.get("metric_dominance_consecutive_decisions", 3)),
-    )
-    findings += check_explanation_failure_marker()
+    # Wrap checks in timer context
+    with timer:
+        findings += check_rule_accretion_velocity(int(windows.get("rule_velocity_days", 30)))
+        findings += check_rule_contradiction(
+            rule_files=[master_rules, governance, context_budget, cursor_rules],
+            enabled=bool(cfg.get("checks", {}).get("check_rule_contradiction", True)),
+            use_enhanced=bool(cfg.get("checks", {}).get("use_enhanced_contradiction_detection", False))
+        )
+        findings += check_justification_decay(
+            decision_log=decision_log,
+            required_fields=normalize_yaml_list(conventions.get("decision_log_required_fields", [])),
+            incomplete_threshold=int(thresholds.get("justification_decay_incomplete_entries", 2)),
+            rolling_entries=int(windows.get("decision_log_rolling_entries", 20)),
+        )
+        findings += check_context_budget_overflow(
+            rule_files=[master_rules, governance, context_budget, cursor_rules],
+            agents_dir=agents_dir,
+            memory_dir=memory_dir,
+            max_rules=int(thresholds.get("max_rules", 120)),
+            max_agents=int(thresholds.get("max_agents", 8)),
+            max_memory=int(thresholds.get("max_memory_artifacts", 200)),
+        )
+        findings += check_silent_memory_growth(
+            memory_dir=memory_dir,
+            required_meta=normalize_yaml_list(conventions.get("memory_required_metadata", [])),
+        )
+        # Extract lists from conventions (normalize YAML parser output)
+        automation_keywords = normalize_yaml_list(conventions.get("automation_keywords", []))
+        forbidden_domains = normalize_yaml_list(conventions.get("forbidden_domains", []))
+        
+        findings += check_automation_creep(
+            decision_log=decision_log,
+            context_budget=context_budget,
+            automation_keywords=automation_keywords,
+            forbidden_domains=forbidden_domains,
+            enabled=bool(cfg.get("checks", {}).get("check_automation_creep", True))
+        )
+        findings += check_override_normalization(
+            decision_log=decision_log,
+            override_markers=normalize_yaml_list(conventions.get("override_markers", [])),
+            per_window_threshold=int(thresholds.get("override_normalization_per_window", 2)),
+        )
+        findings += check_metric_dominance(
+            decision_log=decision_log,
+            metric_markers=normalize_yaml_list(conventions.get("metric_markers", [])),
+            consecutive_threshold=int(thresholds.get("metric_dominance_consecutive_decisions", 3)),
+        )
+        findings += check_explanation_failure_marker()
+        
+        # Security checks
+        security = cfg.get("security", {})
+        findings += check_decision_log_integrity(
+            decision_log=decision_log,
+            enabled=bool(security.get("check_decision_log_integrity", True))
+        )
+        findings += check_governance_file_changes(
+            governance_files=[master_rules, governance, Path(paths.get("reset_triggers", "docs/RESET_TRIGGERS.md"))],
+            decision_log=decision_log,
+            enabled=bool(security.get("check_governance_file_changes", True))
+        )
+        findings += check_secret_detection(
+            decision_log=decision_log,
+            scan_paths=[decision_log, Path(paths.get("docs_dir", "docs"))],
+            secret_patterns=normalize_yaml_list(security.get("secret_patterns", [])),
+            enabled=bool(security.get("check_secrets", True))
+        )
+        findings += check_script_checksums(
+            script_paths=[
+                Path("scripts/lil_os_rule_id_lint.py"),
+                Path("scripts/lil_os_reset_checks.py")
+            ],
+            expected_checksums=security.get("script_checksums", {}),
+            enabled=bool(security.get("check_script_checksums", False))  # Disabled by default
+        )
+
+    # Print findings using OS-like formatting (returns exit code)
+    exit_code = print_findings(findings)
     
-    # Security checks
-    security = cfg.get("security", {})
-    findings += check_decision_log_integrity(
-        decision_log=decision_log,
-        enabled=bool(security.get("check_decision_log_integrity", True))
-    )
-    findings += check_governance_file_changes(
-        governance_files=[master_rules, governance, Path(paths.get("reset_triggers", "docs/RESET_TRIGGERS.md"))],
-        decision_log=decision_log,
-        enabled=bool(security.get("check_governance_file_changes", True))
-    )
-    findings += check_secret_detection(
-        decision_log=decision_log,
-        scan_paths=[decision_log, Path(paths.get("docs_dir", "docs"))],
-        secret_patterns=security.get("secret_patterns", []),
-        enabled=bool(security.get("check_secrets", True))
-    )
-    findings += check_script_checksums(
-        script_paths=[
-            Path("scripts/lil_os_rule_id_lint.py"),
-            Path("scripts/lil_os_reset_checks.py")
-        ],
-        expected_checksums=security.get("script_checksums", {}),
-        enabled=bool(security.get("check_script_checksums", False))  # Disabled by default
-    )
-
-    # Print
-    hard = [f for f in findings if f.level == "HARD_FAIL"]
-    warn = [f for f in findings if f.level == "WARN"]
-
-    for f in findings:
-        print(f"[{f.level}] {f.code}: {f.message}")
-        if f.details:
-            print("  details:", json.dumps(f.details, indent=2))
-
-    print("\nSummary:", f"{len(hard)} hard fail(s), {len(warn)} warning(s), {len(findings)} total finding(s).")
-    return 1 if hard else 0
+    # Emit event for validation run
+    if EVENTS_AVAILABLE:
+        try:
+            event_bus = get_event_bus()
+            if exit_code == 0:
+                event = Event(
+                    type=EventType.VALIDATION_PASSED,
+                    source="lil_os_reset_checks",
+                    data={
+                        "script": "lil_os_reset_checks",
+                        "findings_count": len(findings),
+                        "hard_fails": len([f for f in findings if f.level == "HARD_FAIL"]),
+                        "warnings": len([f for f in findings if f.level == "WARN"]),
+                        "duration": timer.elapsed
+                    },
+                    severity=EventSeverity.INFO,
+                    message=f"Reset checks passed: {len(findings)} finding(s)"
+                )
+            else:
+                event = Event(
+                    type=EventType.VALIDATION_FAILED,
+                    source="lil_os_reset_checks",
+                    data={
+                        "script": "lil_os_reset_checks",
+                        "exit_code": exit_code,
+                        "findings_count": len(findings),
+                        "hard_fails": len([f for f in findings if f.level == "HARD_FAIL"]),
+                        "warnings": len([f for f in findings if f.level == "WARN"]),
+                        "duration": timer.elapsed
+                    },
+                    severity=EventSeverity.ERROR,
+                    message=f"Reset checks failed: {len([f for f in findings if f.level == 'HARD_FAIL'])} hard fail(s)"
+                )
+            event_bus.publish(event)
+        except Exception:
+            # Don't let event errors break validation
+            pass
+    
+    # Print timing
+    if show_timing and timer.elapsed > 0:
+        print(f"{Colors.DIM}⏱️  Completed in {timer.format_elapsed()}{Colors.RESET}")
+    
+    # Generate and save report
+    report = generate_report(check_name, findings, timer, cfg)
+    if report:
+        report_path = save_report(report, cfg)
+        if report_path:
+            print(f"{Colors.DIM}📄 Report saved to {report_path}{Colors.RESET}")
+    
+    # Print success message
+    print_success_message(check_name, findings, timer, show_success)
+    
+    return exit_code
 
 if __name__ == "__main__":
     raise SystemExit(main())

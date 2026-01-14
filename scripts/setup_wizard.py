@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-LIL OS Setup Wizard
-Helps users set up LIL OS in their project with an interactive guide.
+LIL OS² Setup Wizard
+Helps users set up LIL OS² in their project with an interactive guide.
 """
 
 import os
@@ -12,7 +12,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 # Import shared utilities
-from lil_os_utils import Colors
+from lil_os_utils import Colors, load_simple_yaml
 
 def print_header():
     """Print colorful ASCII art header."""
@@ -146,17 +146,17 @@ def create_lil_os_directory():
         print(f"{Colors.BRIGHT_GREEN}✅ .lil_os/ directory already exists{Colors.RESET}")
 
 def check_scripts():
-    """Check if LIL OS scripts are available."""
+    """Check if LIL OS² scripts are available."""
     scripts_dir = Path("scripts")
     rule_id_script = scripts_dir / "lil_os_rule_id_lint.py"
     reset_script = scripts_dir / "lil_os_reset_checks.py"
     
     if rule_id_script.exists() and reset_script.exists():
-        print(f"{Colors.BRIGHT_GREEN}✅ LIL OS validation scripts found{Colors.RESET}")
+        print(f"{Colors.BRIGHT_GREEN}✅ LIL OS² validation scripts found{Colors.RESET}")
         return True
     else:
-        print(f"{Colors.BRIGHT_YELLOW}⚠️  Warning: LIL OS scripts not found in scripts/ directory{Colors.RESET}")
-        print(f"{Colors.YELLOW}   You may need to copy them from the LIL OS repository{Colors.RESET}")
+        print(f"{Colors.BRIGHT_YELLOW}⚠️  Warning: LIL OS² scripts not found in scripts/ directory{Colors.RESET}")
+        print(f"{Colors.YELLOW}   You may need to copy them from the LIL OS² repository{Colors.RESET}")
         return False
 
 def setup_pre_commit():
@@ -197,20 +197,20 @@ def setup_pre_commit():
   - repo: local
     hooks:
       - id: lil-os-critical-change-warning
-        name: LIL OS Critical Change Warning
+        name: LIL OS² Critical Change Warning
         entry: python3 scripts/lil_os_critical_change_warning.py --pre-commit
         language: system
         pass_filenames: false
         always_run: true
         verbose: true
       - id: lil-os-rule-id-lint
-        name: LIL OS Rule ID Lint
+        name: LIL OS² Rule ID Lint
         entry: python3 scripts/lil_os_rule_id_lint.py
         language: system
         pass_filenames: false
         always_run: true
       - id: lil-os-reset-checks
-        name: LIL OS Reset Checks
+        name: LIL OS² Reset Checks
         entry: python3 scripts/lil_os_reset_checks.py
         language: system
         pass_filenames: false
@@ -220,7 +220,7 @@ def setup_pre_commit():
                 print(f"{Colors.BRIGHT_GREEN}✅ Created .pre-commit-config.yaml{Colors.RESET}")
             else:
                 print(f"{Colors.BRIGHT_YELLOW}⚠️  .pre-commit-config.yaml already exists{Colors.RESET}")
-                print(f"{Colors.YELLOW}   You may want to manually add the LIL OS hooks{Colors.RESET}")
+                print(f"{Colors.YELLOW}   You may want to manually add the LIL OS² hooks{Colors.RESET}")
             
             print(f"\n{Colors.BRIGHT_BLUE}📝 Installing git hooks...{Colors.RESET}")
             result = subprocess.run(["pre-commit", "install"], capture_output=True, text=True)
@@ -242,6 +242,118 @@ def setup_pre_commit():
         print(f"{Colors.YELLOW}   You can set it up manually later{Colors.RESET}")
     
     return False
+
+def setup_reporting():
+    """Configure reporting options."""
+    print(f"\n{Colors.BRIGHT_CYAN}{'='*60}{Colors.RESET}")
+    print(f"{Colors.BOLD}  Reporting Configuration{Colors.RESET}")
+    print(f"{Colors.BRIGHT_CYAN}{'='*60}{Colors.RESET}")
+    print(f"\n{Colors.WHITE}LIL OS² can generate reports of validation results.{Colors.RESET}")
+    print(f"\n{Colors.BRIGHT_GREEN}Benefits:{Colors.RESET}")
+    print(f"  {Colors.GREEN}✓{Colors.RESET} Track validation history over time")
+    print(f"  {Colors.GREEN}✓{Colors.RESET} Debug issues with detailed reports")
+    print(f"  {Colors.GREEN}✓{Colors.RESET} Audit trail for compliance")
+    print(f"\n{Colors.BRIGHT_YELLOW}Note:{Colors.RESET}")
+    print(f"  {Colors.YELLOW}•{Colors.RESET} Reports are saved to {Colors.DIM}.lil_os/reports/{Colors.RESET}")
+    print(f"  {Colors.YELLOW}•{Colors.RESET} You can enable/disable this later in config files")
+    print(f"  {Colors.YELLOW}•{Colors.RESET} Reports are excluded from git by default")
+    print(f"{Colors.BRIGHT_CYAN}{'='*60}{Colors.RESET}")
+    
+    response = input(f"\n{Colors.BRIGHT_CYAN}📊 Enable report generation? (y/n): {Colors.RESET}").strip().lower()
+    
+    enable_reports = response == 'y'
+    
+    # Update reset checks config
+    reset_config_path = Path("lil_os.reset_checks.yaml")
+    if reset_config_path.exists():
+        try:
+            config = load_simple_yaml(reset_config_path)
+            if "reporting" not in config:
+                config["reporting"] = {}
+            
+            config["reporting"]["generate_reports"] = enable_reports
+            config["reporting"]["report_format"] = ["json", "markdown"]
+            config["reporting"]["report_location"] = ".lil_os/reports"
+            config["reporting"]["show_startup_banner"] = True
+            config["reporting"]["show_success_message"] = True
+            config["reporting"]["show_timing"] = True
+            
+            # Write updated config (simple YAML writer)
+            write_simple_yaml(reset_config_path, config)
+            print(f"{Colors.BRIGHT_GREEN}✅ Updated lil_os.reset_checks.yaml{Colors.RESET}")
+        except Exception as e:
+            print(f"{Colors.BRIGHT_YELLOW}⚠️  Could not update reset checks config: {e}{Colors.RESET}")
+    
+    # Update rule ID config
+    rule_id_config_path = Path("lil_os.rule_id.yaml")
+    if rule_id_config_path.exists():
+        try:
+            config = load_simple_yaml(rule_id_config_path)
+            if "reporting" not in config:
+                config["reporting"] = {}
+            
+            config["reporting"]["generate_reports"] = enable_reports
+            config["reporting"]["report_format"] = ["json", "markdown"]
+            config["reporting"]["report_location"] = ".lil_os/reports"
+            config["reporting"]["show_startup_banner"] = True
+            config["reporting"]["show_success_message"] = True
+            config["reporting"]["show_timing"] = True
+            
+            write_simple_yaml(rule_id_config_path, config)
+            print(f"{Colors.BRIGHT_GREEN}✅ Updated lil_os.rule_id.yaml{Colors.RESET}")
+        except Exception as e:
+            print(f"{Colors.BRIGHT_YELLOW}⚠️  Could not update rule ID config: {e}{Colors.RESET}")
+    
+    if enable_reports:
+        print(f"\n{Colors.BRIGHT_MAGENTA}💡 Tip:{Colors.RESET} {Colors.DIM}Reports will be saved to .lil_os/reports/ after each validation run.{Colors.RESET}")
+    else:
+        print(f"\n{Colors.DIM}   Reporting disabled. You can enable it later by editing the config files.{Colors.RESET}")
+
+def write_simple_yaml(path: Path, data: dict):
+    """Simple YAML writer - appends reporting section to existing file."""
+    # Read existing content
+    existing_content = path.read_text(encoding="utf-8") if path.exists() else ""
+    
+    # Remove existing reporting section if present
+    lines = existing_content.splitlines()
+    new_lines = []
+    skip_until_empty = False
+    
+    for i, line in enumerate(lines):
+        if line.strip().startswith("reporting:"):
+            skip_until_empty = True
+            continue
+        if skip_until_empty:
+            if line.strip() == "" and i < len(lines) - 1 and lines[i + 1].strip() != "":
+                skip_until_empty = False
+            continue
+        new_lines.append(line)
+    
+    # Remove trailing empty lines
+    while new_lines and new_lines[-1].strip() == "":
+        new_lines.pop()
+    
+    # Add reporting section
+    if new_lines and new_lines[-1].strip() != "":
+        new_lines.append("")
+    
+    new_lines.append("reporting:")
+    new_lines.append(f"  generate_reports: {str(data['reporting']['generate_reports']).lower()}")
+    # Format list properly
+    report_format = data['reporting']['report_format']
+    if isinstance(report_format, list):
+        new_lines.append("  report_format:")
+        for item in report_format:
+            new_lines.append(f"    - \"{item}\"")
+    else:
+        new_lines.append(f"  report_format: {report_format}")
+    new_lines.append(f"  report_location: \"{data['reporting']['report_location']}\"")
+    new_lines.append(f"  keep_reports_days: {data['reporting'].get('keep_reports_days', 30)}")
+    new_lines.append(f"  show_startup_banner: {str(data['reporting']['show_startup_banner']).lower()}")
+    new_lines.append(f"  show_success_message: {str(data['reporting']['show_success_message']).lower()}")
+    new_lines.append(f"  show_timing: {str(data['reporting']['show_timing']).lower()}")
+    
+    path.write_text("\n".join(new_lines), encoding="utf-8")
 
 def run_validation():
     """Offer to run validation scripts."""
@@ -288,10 +400,10 @@ def print_next_steps():
     print(f"\n{Colors.BRIGHT_BLUE}📚 Next Steps:{Colors.RESET}")
     print(f"{Colors.WHITE}   1. Read docs/USER_GUIDE.md for a beginner-friendly guide{Colors.RESET}")
     print(f"{Colors.WHITE}   2. Read docs/GOVERNANCE.md to understand the rules{Colors.RESET}")
-    print(f"{Colors.WHITE}   3. Start coding normally - LIL OS only steps in for important decisions{Colors.RESET}")
+    print(f"{Colors.WHITE}   3. Start coding normally - LIL OS² only steps in for important decisions{Colors.RESET}")
     print(f"{Colors.WHITE}   4. When you make an important decision, log it in docs/DECISION_LOG.md{Colors.RESET}")
     print(f"\n{Colors.BRIGHT_MAGENTA}💡 Tip:{Colors.RESET} {Colors.DIM}Copy this prompt to your AI assistant for help:{Colors.RESET}")
-    print(f"{Colors.DIM}   'I just set up LIL OS. Can you help me understand when I need to{Colors.RESET}")
+    print(f"{Colors.DIM}   'I just set up LIL OS². Can you help me understand when I need to{Colors.RESET}")
     print(f"{Colors.DIM}    log decisions vs when I can just code normally?'{Colors.RESET}")
     print(f"\n{Colors.BRIGHT_CYAN}{'='*60}{Colors.RESET}\n")
 
@@ -308,7 +420,7 @@ def main():
         sys.exit(1)
     
     # Create necessary directories and files
-    print(f"\n{Colors.BRIGHT_BLUE}📦 Setting up LIL OS structure...{Colors.RESET}")
+    print(f"\n{Colors.BRIGHT_BLUE}📦 Setting up LIL OS² structure...{Colors.RESET}")
     create_docs_directory()
     create_decision_log()
     create_lil_os_directory()
@@ -316,6 +428,7 @@ def main():
     
     # Optional setup
     setup_pre_commit()
+    setup_reporting()
     run_validation()
     
     # Final instructions

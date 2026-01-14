@@ -45,6 +45,9 @@ ENV/
 # LIL OS specific
 .lil_os/EXPLANATION_FAILED
 .lil_os/*.tmp
+.lil_os/reports/
+.lil_os/sessions/
+.lil_os/ml/
 
 # Testing
 .pytest_cache/
@@ -56,4 +59,14 @@ htmlcov/
 *.tmp
 *.bak
 *.log
+
+# Python package build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+
+# Watchdog cache (if any)
+.watchdog/
 

@@ -1,27 +1,59 @@
-# TODOS (v0.1.1)
+# TODOS (v2.0.0)
 
-Authoritative backlog.
+Authoritative backlog for LIL OS² ML.
 
 ## Governance Hooks
 - Any TODO that changes goals/metrics/agent autonomy MUST result in a DECISION_LOG entry when executed.
 - Any TODO that increases rules/agents/memory MUST consider CONTEXT_BUDGET.md ceilings.
 
-## Pre-Release Tasks
-- ✅ Document missing features - Add an "Implementation Status" section to RESET_TRIGGERS.md showing which triggers are implemented vs. documented
-- ✅ Clarify enforcement model - Update README to explain that LIL OS provides governance patterns and validation, not runtime enforcement
-- ✅ Rule ID linter verification - Verify rule ID linter finds rules correctly (the earlier warning may have been a false positive)
-- ✅ Create warning system for critical changes - Build a script that warns inexperienced developers when important/critical changes are about to be made (non-blocking warnings)
-- ✅ Enhance setup wizard pre-commit configuration - Improve setup wizard to better explain pre-commit hooks with opt-in/opt-out, help keep docs tidy for multiple agents
-- ✅ Create git hook for critical change warnings - Add a git hook that provides warnings (not blocks) for governance file changes before commits
-- ✅ Update documentation on enforcement model - Clarify that warnings are provided but system can be bypassed, designed for inexperienced developer safety
+---
 
-## v0.2.0 Implementation Tasks
-- ✅ Phase 1: Automation Creep Detection - Implement check_automation_creep() function to detect when automation expands into human-judgment domains
-- ✅ Phase 2: Basic Rule Contradiction Detection - Implement pattern-based rule contradiction detection with helper functions
-- ✅ Phase 3: Enhanced Rule Contradiction Detection - Set up structure/placeholder for future semantic analysis implementation
+## Completed (v1.0 - v2.0)
 
-## Code Optimization Tasks
-- ✅ Create shared utilities module - Consolidated duplicate code into scripts/lil_os_utils.py (Colors, Finding, load_simple_yaml, read_text)
-- ✅ Fix YAML parser workarounds - Added normalize_yaml_list() helper to clean up YAML parser output
-- ✅ Update all scripts to use shared utilities - Refactored all 4 scripts to use shared utilities module
-- ✅ Test all scripts - Verified all scripts work correctly after refactoring
+### Pre-Release Tasks (v1.0)
+- [x] Document missing features in RESET_TRIGGERS.md
+- [x] Clarify enforcement model in README
+- [x] Rule ID linter verification
+- [x] Create warning system for critical changes
+- [x] Enhance setup wizard pre-commit configuration
+- [x] Create git hook for critical change warnings
+- [x] Update documentation on enforcement model
+
+### v0.2.0 Implementation
+- [x] Phase 1: Automation Creep Detection
+- [x] Phase 2: Basic Rule Contradiction Detection
+- [x] Phase 3: Enhanced Rule Contradiction Detection
+
+### Code Optimization
+- [x] Create shared utilities module (scripts/lil_os_utils.py)
+- [x] Fix YAML parser with normalize_yaml_list()
+- [x] Update all scripts to use shared utilities
+- [x] Add exclude_paths support to rule ID linter
+
+### v2.0.0 ML Module
+- [x] Core module structure (lil_os/core/)
+- [x] ML module architecture (lil_os/ml/)
+- [x] Rule management with lifecycle tracking
+- [x] Decision logging with analytics
+- [x] Context budget monitoring
+- [x] Pattern-based contradiction detection
+- [x] Automation creep detection
+- [x] Governance pattern recognition
+- [x] ML monitoring & instrumentation
+- [x] Test framework setup
+- [x] Documentation suite
+
+---
+
+## Current Status: MVP COMPLETE
+
+All Phase 1-2 features are complete. See `docs/FEATURE_COMPLETENESS_CHECKLIST.md` for detailed status.
+
+## Future (Phase 2+)
+- [ ] Semantic embeddings for contradiction detection
+- [ ] Fine-tuned classification models
+- [ ] Sequence models for temporal patterns
+- [ ] Complete API reference documentation
+- [ ] Performance optimization (caching layer)
+- [ ] Security audit
+- [ ] Production monitoring setup

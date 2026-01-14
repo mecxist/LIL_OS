@@ -350,7 +350,133 @@ The validation script is failing with this error: [paste error]. Can you help me
 
 ---
 
-## Part 7: Getting Help
+## Part 7: Enhanced Shell Interface
+
+LIL OS includes an enhanced shell interface that provides real-time monitoring and governance prompts. This is like having a dashboard that shows you what's happening in your project.
+
+### What is the Enhanced Shell?
+
+The enhanced shell is a special terminal interface that:
+- Shows you all system events as they happen (file changes, git operations, validation results)
+- Prompts you when governance decisions are needed
+- Monitors your project in the background
+- Provides a status bar showing daemon and validation status
+
+### How to Use It
+
+Launch the enhanced shell:
+
+```bash
+lil-os shell
+```
+
+Or using the Python module:
+
+```bash
+python3 -m lil_os.cli shell
+```
+
+The shell will:
+1. Start automatically
+2. Display a welcome banner
+3. Show a status bar with daemon and validation status
+4. Display any pending governance prompts
+
+### Key Features
+
+**Activity Feed**: See what's happening in real-time
+- Type `activity` to see recent events
+- Events are color-coded by severity (INFO=cyan, WARN=yellow, ERROR=red)
+
+**Governance Prompts**: Get notified when decisions are needed
+- Prompts appear automatically when governance files are modified
+- Type `prompt` to see pending prompts
+- Type `log-decision` to create a decision log entry and clear the prompt
+
+**Status Bar**: Always-visible status information
+- Daemon status (running/stopped)
+- Validation status (passed/failed)
+- Pending governance decisions count
+
+### Common Commands
+
+- `activity [N]` - Show last N events (default: 20)
+- `events` - List recent events with filtering options
+- `prompt` - Show pending governance prompts
+- `daemon status` - Check daemon status
+- `log-decision` - Create decision log entry
+
+For complete documentation, see the [Shell Interface Guide](SHELL_INTERFACE.md).
+
+---
+
+## Part 8: ML Modules (Optional)
+
+LIL OS² includes optional machine learning modules that can help predict change risk, detect drift in validation patterns, and evaluate RAG quality. These modules are **optional** and require additional dependencies.
+
+### Installing ML Modules
+
+To use ML modules, install LIL OS with the ML extras:
+
+```bash
+pip install lil-os[ml]
+```
+
+This installs scikit-learn and other ML dependencies.
+
+### Available ML Modules
+
+**1. Change Risk (`change_risk`)**
+- Predicts risk level of code changes (low/medium/high)
+- Uses git commit history and validation reports
+- Helps identify risky changes before they're merged
+
+**2. Drift Detection (`drift`)**
+- Detects anomalies in validation patterns
+- Monitors rule violation trends
+- Alerts when development behavior changes unexpectedly
+
+**3. RAG Quality (`rag_quality`)**
+- Evaluates retrieval quality for RAG systems
+- Uses cosine similarity and semantic search
+- Helps ensure documentation retrieval is working well
+
+### Using ML Modules
+
+**Check ML status:**
+```bash
+lil-os ml status
+```
+
+**Run ML evaluations:**
+```bash
+lil-os ml run --all
+```
+
+**Enable a module:**
+```bash
+lil-os ml enable change_risk
+```
+
+**Disable a module:**
+```bash
+lil-os ml disable change_risk
+```
+
+**Train models:**
+```bash
+lil-os ml train --module change_risk
+```
+
+### Configuration
+
+ML modules are configured in `lil_os.ml.yaml`. Each module can be enabled/disabled independently and has configurable thresholds and modes (warn, require_review, ci_block).
+
+**Note:** ML modules are experimental and should be used with caution. They require sufficient training data to be effective.
+
+---
+
+## Part 9: Getting Help
 
 ### If You're Stuck
 

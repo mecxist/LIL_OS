@@ -117,7 +117,20 @@ Here are the official resources for the IDEs that work best with LIL OS, for ref
 
 ---
 
-### Step 2: Run the Setup Wizard
+### Step 2: Install Dependencies (If Installing as Package)
+
+**If you're installing LIL OS as a package** (using `pip install lil-os` or `pip install -e .`), the dependencies will be installed automatically. LIL OS requires:
+- `watchdog>=3.0.0` - For file system monitoring (used by the enhanced shell interface)
+
+**If you're running LIL OS from source** (using `python3 -m lil_os.cli`), you may need to install dependencies manually:
+
+```bash
+pip install watchdog>=3.0.0
+```
+
+**Note:** The enhanced shell interface requires watchdog for real-time file monitoring. If watchdog is not installed, the system will fall back to polling-based monitoring.
+
+### Step 3: Run the Setup Wizard
 
 **Before running the setup wizard, we recommend reading `USER_GUIDE.md`** (especially the "Setting Up LIL OS" section starting around line 38). The User Guide explains what questions the wizard will ask and how to answer them correctly, which is especially helpful if you're new to LIL OS or development tools.
 

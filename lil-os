@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+"""
+LIL OS² Command Wrapper
+
+This script allows you to run LIL OS² commands without installing the package.
+Usage: ./lil-os <command> [args...]
+"""
+
+import sys
+from pathlib import Path
+
+# Add current directory to path
+sys.path.insert(0, str(Path(__file__).parent))
+
+# Try to use CLI v2 (typer-based), fallback to v1 (argparse-based)
+try:
+    from lil_os.cli_v2 import main
+except (ImportError, AttributeError):
+    # Fallback to legacy CLI if typer not available or cli_v2 fails
+    from lil_os.cli import main
+
+if __name__ == "__main__":
+    sys.exit(main())
+
